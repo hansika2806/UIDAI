@@ -1,302 +1,164 @@
-<<<<<<< HEAD
-# UIDAI Intelligence Studio
+# UIDAI Governance Intelligence Framework
+### Aadhaar System Maturity, Stress & Policy Intelligence — UIDAI Data Hackathon 2026
 
-This project turns the full `datahack.ipynb` analysis into a reusable UIDAI analytics pipeline and a professional Streamlit dashboard. The goal is not to discard notebook work, but to preserve every meaningful analytical block and expose it as a production-style exploration surface.
-
-## What the project now includes
-
-- Data cleaning for enrolment, demographic update, and biometric update files
-- State and UT standardization, including merged UT normalization
-- Analysis-ready datasets with time attributes and total activity fields
-- State-month analytical features:
-  - update-to-enrolment ratios
-  - demographic and biometric update intensity
-  - lifecycle shares for child enrolment and adult updates
-  - total activity and stress proxies
-- State-level analytical outputs:
-  - Aadhaar Maturity Index (AMI)
-  - Update Pressure Index (UPI)
-  - Volatility Stress Index (VSI)
-  - Temporal Predictability Score (TPS)
-  - policy categories
-  - governance status and recommended policy actions
-  - anomaly flags and priority scoring
-- Additional notebook-derived outputs:
-  - activity correlation matrix
-  - indicator correlation matrix
-  - rank persistence tables
-  - lag features
-  - Pareto concentration summary
-  - national monthly summary
-
-## Project structure
-
-- [datahack.ipynb](/C:/Users/nagah/Projects/UIDAI-data/datahack.ipynb)
-  Source notebook containing the original analysis flow.
-- [src/data_cleaning.py](/C:/Users/nagah/Projects/UIDAI-data/src/data_cleaning.py)
-  Cleans raw UIDAI files and standardizes state names.
-- [src/analytics.py](/C:/Users/nagah/Projects/UIDAI-data/src/analytics.py)
-  Shared analytics engine that reproduces the notebook logic.
-- [src/feature_engineering.py](/C:/Users/nagah/Projects/UIDAI-data/src/feature_engineering.py)
-  Builds the full analysis output bundle for the dashboard.
-- [dashboard/app.py](/C:/Users/nagah/Projects/UIDAI-data/dashboard/app.py)
-  Dynamic Streamlit app with filter-driven recomputation.
-
-## Setup
-
-1. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. Place raw UIDAI files in [data/raw](/C:/Users/nagah/Projects/UIDAI-data/data/raw):
-
-- `api_data_aadhar_enrolment.zip`
-- `api_data_aadhar_demographic.zip`
-- `api_data_aadhar_biometric.zip`
-
-3. Run the pipeline:
-
-```bash
-python src/data_cleaning.py
-python src/feature_engineering.py
-python src/visualization.py
-```
-
-4. Launch the dashboard:
-
-```bash
-streamlit run dashboard/app.py
-```
-
-## Dashboard sections
-
-- Executive Overview
-- Governance Diagnostics
-- Lifecycle and Operations
-- Anomalies and Risk
-- State Drilldown
-- Data Export
-
-Each view is designed to use the notebook’s analytical outputs directly, and the dashboard recomputes metrics when the user changes date ranges or state scope.
-
-## Core analytical interpretation
-
-- `AMI`
-  Higher means more mature Aadhaar activity footprint.
-- `UPI`
-  Higher means stronger transition from enrolment to maintenance/update burden.
-- `VSI`
-  Higher means more unstable update pressure over time.
-- `TPS`
-  Higher means more predictable temporal relationship between enrolment and later update behavior.
-
-## Important note
-
-The dashboard is production-ready from a code perspective, but it still needs the real UIDAI datasets in `data/raw/` to generate analysis outputs. The repository does not currently include those raw files.
-=======
-# 🇮🇳 UIDAI Data Hackathon 2026  
-## Aadhaar System Maturity, Stress & Governance Intelligence Framework
-
-> Transforming Aadhaar Enrollment & Update Data into Policy-Grade Governance Intelligence
+> Transforming raw Aadhaar enrolment and update data into policy-grade governance intelligence at state–month granularity.
 
 ---
 
-## 📌 Overview
+## Overview
 
-India’s Aadhaar ecosystem serves over **1.3 billion residents** and has transitioned from an expansion-driven system to a **mature, maintenance-intensive digital infrastructure**.
+India's Aadhaar ecosystem serves over **1.3 billion residents** and has long since transitioned from an expansion-driven system into a **mature, maintenance-intensive digital infrastructure**. Traditional analytics ask *"how many enrolled?"* — this project asks a harder question:
 
-This project builds a **Governance Intelligence Framework** that transforms raw Aadhaar enrolment and update datasets into:
+> **How efficiently is the system functioning, and where is it under stress?**
 
-- System maturity diagnostics  
-- Operational stress indicators  
-- Maintenance burden metrics  
-- Lifecycle-aware forecasting signals  
-- Policy-ready state classifications  
-
-The focus shifts from:
-
-> “How many enrolled?”  
-to  
-> “How efficiently is the system functioning?”
+This framework engineers four composite governance indicators, classifies every Indian state into policy-action categories, and surfaces everything through a production-ready Streamlit dashboard with filter-driven recomputation.
 
 ---
 
-## 🎯 Problem Statement
+## Analytical Framework
 
-Traditional Aadhaar analytics emphasize enrollment volumes. However:
+The analysis proceeds in three tiers.
 
-- Demographic updates exceed enrollments by **5–10x** in several states.
-- Update demand shows significantly higher volatility than enrollment.
-- Large states experience disproportionate maintenance stress.
-- Demographic lifecycle shifts predict future biometric update surges.
+**Tier 1 — Univariate Analysis**  
+Establishes update dominance and system maturity transition signals. In several states, demographic updates exceed enrolments by 5–10×.
 
-This project bridges the gap between raw transaction data and governance intelligence.
-
----
-
-## 📊 Datasets Used
-
-| Dataset | Description | Role in Analysis |
-|----------|------------|------------------|
-| Aadhaar Enrolment Dataset | New Aadhaar registrations | Expansion baseline |
-| Demographic Update Dataset | Address, name, DOB updates | Maintenance burden |
-| Biometric Update Dataset | Fingerprint, iris, face updates | Authentication upkeep |
-
-All datasets were cleaned, standardized, and aggregated at **state–month granularity**.
-
----
-
-## ⚙️ Data Engineering Pipeline
-
-### Data Cleaning
-- Date standardization  
-- State & UT normalization  
-- Administrative reconciliation  
-- Duplicate removal  
-- Numeric validation  
-- Categorical treatment of pincodes  
-
-### Feature Engineering
-- Child vs Adult enrolment shares  
-- Total Aadhaar activity  
-- Update-to-enrolment ratios  
-- Volatility measures  
-- Lifecycle demographic indicators  
-
----
-
-## 🧠 Analytical Framework
-
-### 🔹 Tier 1 — Univariate Analysis
-Identifies update dominance and system maturity transition.
-
-### 🔹 Tier 2 — Bivariate Analysis
-
-**Correlation Results**
+**Tier 2 — Bivariate Analysis**  
+Quantifies inter-activity relationships and volatility asymmetry.
 
 | Activity Pair | Pearson r |
-|---------------|-----------|
+|---|---|
 | Enrolment ↔ Demographic Updates | 0.61 |
 | Demographic Updates ↔ Biometric Updates | 0.57 |
 | Enrolment ↔ Biometric Updates | 0.53 |
 
-Spearman rank stability ≈ **0.95–0.97**
+Spearman rank stability across states: **ρ ≈ 0.95–0.97**  
+Enrolment CV: ~30–40% · Update Pressure CV: ~80–120%
 
-**Volatility Diagnostics**
-
-- Enrollment CV ≈ 30–40%  
-- Update Pressure CV ≈ 80–120%  
-
----
-
-### 🔹 Tier 3 — Trivariate Governance Mapping
-
-Three key dimensions:
-
-- **Scale** → Total Aadhaar Activity  
-- **Pressure** → Update Pressure Index (UPI)  
-- **Stress** → Volatility Stress Index (VSI)  
+**Tier 3 — Trivariate Governance Mapping**  
+Maps each state on three dimensions simultaneously: Scale (Total Aadhaar Activity), Pressure (UPI), and Stress (VSI) — enabling clustered policy recommendations.
 
 ---
 
-## 📈 Policy-Grade Indicators
+## Policy-Grade Composite Indicators
 
-### 1️⃣ Aadhaar Maturity Index (AMI)
-Composite normalized maturity score.
+Four indicators are derived for each state and normalized via Min–Max scaling.
 
-### 2️⃣ Update Pressure Index (UPI)
+**Aadhaar Maturity Index (AMI)**  
+Composite normalized score reflecting the overall maturity of a state's Aadhaar activity footprint. Higher = more mature.
 
-```python
-UPI = log(Updates_total + 1) - log(Enrolments_total + 1)
+**Update Pressure Index (UPI)**  
 ```
+UPI = log(Updates_total + 1) − log(Enrolments_total + 1)
+```
+Measures the degree to which a state has shifted from enrolment expansion to maintenance burden. Higher = stronger pressure.
 
-Measures maintenance intensity.
+**Volatility Stress Index (VSI)**  
+Coefficient of variation of update pressure over time. Higher = more unstable, harder to plan infrastructure for.
 
-### 3️⃣ Volatility Stress Index (VSI)
-Coefficient of variation of update pressure over time.
-
-### 4️⃣ Temporal Predictability Score (TPS)
-Lag-based stability metric between enrolment and updates.
-
-All indicators normalized using Min–Max scaling.
-
----
-
-## 🚨 Governance Classification
-
-States categorized into:
-
-- Stable Mature Systems  
-- High Maintenance Stress  
-- Expansion Phase States  
-- Unpredictable Systems  
-- Balanced / Transitional  
-
-Each category maps directly to targeted policy actions.
+**Temporal Predictability Score (TPS)**  
+Lag-based stability metric between enrolment and subsequent update behavior. Higher = more predictable future demand signal.
 
 ---
 
-## 📊 Quantitative Highlights
+## Governance Classification
 
-| Metric | Value |
-|--------|-------|
-| Pearson (Enrolment–Demographic) | 0.61 |
-| Spearman Rank Stability | 0.97 |
-| Enrollment Volume CV | ~30–40% |
-| Update Pressure CV | ~80–120% |
+States are classified into five policy categories with targeted action recommendations:
 
----
+| Category | Signal |
+|---|---|
+| Stable Mature Systems | High AMI, moderate UPI, low VSI |
+| High Maintenance Stress | High UPI + high VSI |
+| Expansion Phase States | Low AMI, low UPI |
+| Unpredictable Systems | High VSI, low TPS |
+| Balanced / Transitional | Mixed signals across all four indicators |
 
-## 🛠 Tech Stack
-
-- Python  
-- Pandas  
-- NumPy  
-- Matplotlib  
-- Statistical diagnostics (Correlation, CV)  
-- Log-based normalization  
-- Rank-based composite scoring  
-- Euclidean anomaly detection  
+Anomaly flags and priority scores are computed using Euclidean anomaly detection against the national indicator distribution.
 
 ---
 
-## 📂 Project Structure
+## Data Engineering Pipeline
+
+**Datasets**
+
+| Dataset | Role |
+|---|---|
+| Aadhaar Enrolment | Expansion baseline |
+| Demographic Update (name, address, DOB) | Maintenance burden proxy |
+| Biometric Update (fingerprint, iris, face) | Authentication upkeep |
+
+All datasets cleaned, standardized, and aggregated at **state–month granularity**.
+
+**Cleaning steps:** date standardization, state/UT normalization, UT merger reconciliation, duplicate removal, numeric validation, pincode treatment.
+
+**Engineered features:** child vs adult enrolment shares, total Aadhaar activity, update-to-enrolment ratios, volatility measures, lifecycle demographic indicators, Pareto concentration summaries, lag features, rank persistence tables, national monthly summary.
+
+---
+
+## Project Structure
 
 ```
+UIDAI-data/
 ├── data/
-│   ├── enrolment_dataset.csv
-│   ├── demographic_updates.csv
-│   └── biometric_updates.csv
-│
-├── notebooks/
-│   ├── data_preprocessing.ipynb
-│   ├── analysis_framework.ipynb
-│   └── indicator_engineering.ipynb
-│
-├── outputs/
-│   ├── state_indicators.csv
-│   └── governance_classification.csv
-│
+│   └── raw/                          # Raw UIDAI zip files (not committed)
+│       ├── api_data_aadhar_enrolment.zip
+│       ├── api_data_aadhar_demographic.zip
+│       └── api_data_aadhar_biometric.zip
+├── src/
+│   ├── data_cleaning.py              # Cleans raw files, standardizes state names
+│   ├── analytics.py                  # Core analytics engine (reproduces notebook logic)
+│   └── feature_engineering.py        # Builds full analysis output bundle
+├── dashboard/
+│   └── app.py                        # Streamlit app with filter-driven recomputation
+├── datahack.ipynb                    # Original analysis notebook
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 🚀 Key Contributions
+## Setup
 
-- Shifted Aadhaar analytics from descriptive reporting to governance intelligence  
-- Engineered interpretable policy-grade composite indicators  
-- Integrated volatility-aware capacity diagnostics  
-- Developed anomaly detection for governance irregularities  
-- Enabled lifecycle-based infrastructure forecasting  
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Place raw UIDAI zip files in data/raw/
+
+# 3. Run the pipeline
+python src/data_cleaning.py
+python src/feature_engineering.py
+
+# 4. Launch the dashboard
+streamlit run dashboard/app.py
+```
+
+> **Note:** The repository does not include raw UIDAI datasets. Request access through the official UIDAI data portal.
 
 ---
 
-## 🏁 Conclusion
+## Dashboard
 
-This project reframes Aadhaar as a mature, lifecycle-driven digital infrastructure requiring intelligent maintenance governance rather than enrollment-only expansion policy.
+Six views, each recomputing from filtered data when the user changes date range or state scope:
 
-It delivers a scalable, interpretable, and policy-aligned analytical framework for proactive decision-making.
->>>>>>> 819f66ac64300732888a50e32c6d037cde6a10b5
+- **Executive Overview** — national-level maturity and stress summary
+- **Governance Diagnostics** — indicator heatmaps and state rankings
+- **Lifecycle & Operations** — child/adult enrolment splits, update intensity
+- **Anomalies & Risk** — Euclidean anomaly flags, priority scores
+- **State Drilldown** — full indicator profile for a selected state
+- **Data Export** — filtered outputs as CSV
+
+---
+
+## Tech Stack
+
+Python · Pandas · NumPy · Matplotlib · Seaborn · Streamlit · Log-normalization · Rank-based composite scoring · Spearman rank analysis · Euclidean anomaly detection · Pareto concentration diagnostics
+
+---
+
+## Key Contributions
+
+- Shifted Aadhaar analytics from descriptive volume reporting to interpretable governance intelligence
+- Engineered four policy-grade composite indicators (AMI, UPI, VSI, TPS) grounded in log-normalization and rank-based scoring
+- Built volatility-aware capacity diagnostics that surface states with high infrastructure planning risk
+- Developed anomaly detection for governance irregularities at state level
+- Delivered a production-ready dashboard with filter-driven metric recomputation across three datasets
