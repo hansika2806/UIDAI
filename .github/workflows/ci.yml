@@ -1,0 +1,115 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-format:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 ruff mypy
+        pip install -r requirements.txt
+    
+    - name: Run Black (Code Formatting Check)
+      run: black --check --diff src/ dashboard/
+    
+    - name: Run Flake8 (Linting)
+      run: flake8 src/ dashboard/ --max-line-length=100 --extend-ignore=E203,W503
+    
+    - name: Run Ruff (Fast Linting)
+      run: ruff check src/ dashboard/
+    
+    - name: Run MyPy (Type Checking)
+      run: mypy src/ --ignore-missing-imports --no-strict-optional
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run pytest with coverage
+      run: |
+        pytest tests/ -v --cov=src --cov=dashboard --cov-report=xml --cov-report=term
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  docker-build:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: uidai-intelligence:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install safety
+      run: pip install safety
+    
+    - name: Run safety check
+      run: safety check --json || true
+    
+    - name: Run Bandit security linter
+      run: |
+        pip install bandit
+        bandit -r src/ dashboard/ -f json -o bandit-report.json || true
+
+# Made with Bob

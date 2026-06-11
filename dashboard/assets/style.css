@@ -1,0 +1,79 @@
+/* UIDAI Intelligence Studio - Custom Styling */
+
+/* Global App Styling */
+.stApp {
+    background:
+        radial-gradient(circle at top right, rgba(14,116,144,0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(245,158,11,0.10), transparent 24%),
+        linear-gradient(180deg, #f8fafc 0%, #eef4f7 100%);
+}
+
+.block-container {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-family: "Aptos Display", "Trebuchet MS", sans-serif;
+    letter-spacing: -0.02em;
+    color: #102a43;
+}
+
+p, div, span, label {
+    font-family: "Aptos", "Segoe UI", sans-serif;
+}
+
+/* Hero Section */
+.hero {
+    padding: 1.35rem 1.5rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(16,42,67,0.96), rgba(14,116,144,0.90));
+    color: white;
+    box-shadow: 0 18px 45px rgba(16,42,67,0.18);
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    color: rgba(255,255,255,0.82);
+    margin-bottom: 0;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(148,163,184,0.18);
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.metric-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0.1rem 0;
+}
+
+.metric-note {
+    font-size: 0.88rem;
+    color: #475569;
+}
+
+/* Panel Notes */
+.panel-note {
+    background: rgba(255,255,255,0.8);
+    border-left: 4px solid #0e7490;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    color: #334155;
+}
+
+/* Made with Bob */

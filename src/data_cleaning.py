@@ -1,9 +1,14 @@
 import os
 import glob
 import zipfile
+import logging
 import pandas as pd
 import numpy as np
 from config import RAW_DATA_DIR, CLEANED_DATA_DIR
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 STATE_MAPPING = {
     "Andaman & Nicobar Islands": "Andaman And Nicobar Islands",
@@ -53,61 +58,70 @@ def validate_raw_inputs():
             f"{missing_lines}"
         )
 
+
 def extract_zips():
-    print("Extracting any zip files in raw data directory...")
+    logger.info("Extracting any zip files in raw data directory...")
     zips = glob.glob(os.path.join(RAW_DATA_DIR, "*.zip"))
     for zip_path in zips:
         extract_folder = zip_path.replace('.zip', '')
         if not os.path.exists(extract_folder):
-            print(f"Extracting {zip_path}...")
+            logger.info(f"Extracting {zip_path} to {extract_folder}...")
             with zipfile.ZipFile(zip_path, 'r') as z:
                 z.extractall(extract_folder)
         else:
-            print(f"Folder {extract_folder} already exists, skipping extraction.")
+            logger.info(f"Folder {extract_folder} already exists, skipping extraction.")
+
 
 def load_and_clean_enrolment():
-    print("Processing Enrolment Data...")
+    logger.info("Processing Enrolment Data...")
     # Try to find CSVs in subdirectories or directly in RAW_DATA_DIR
     files = glob.glob(os.path.join(RAW_DATA_DIR, "api_data_aadhar_enrolment*", "**", "*.csv"), recursive=True)
     if not files:
         files = glob.glob(os.path.join(RAW_DATA_DIR, "api_data_aadhar_enrolment*.csv"))
         
     if not files:
-        print("Warning: No enrolment CSV files found.")
+        logger.warning("No enrolment CSV files found.")
         return None
 
     df_list = []
     for f in files:
-        df = pd.read_csv(f)
-        df['date'] = pd.to_datetime(df['date'], dayfirst=True)
-        df['state'] = df['state'].str.strip().str.title()
-        df['district'] = df['district'].str.strip().str.title()
-        df['pincode'] = df['pincode'].astype(str)
-        
-        # Drop negative counts
-        df = df[(df['age_0_5'] >= 0) & (df['age_5_17'] >= 0) & (df['age_18_greater'] >= 0)]
-        df_list.append(df)
+        logger.info(f"Reading enrolment file: {f} in chunks...")
+        # Read in chunks to prevent memory bloat
+        for chunk in pd.read_csv(f, chunksize=100000):
+            chunk['date'] = pd.to_datetime(chunk['date'], dayfirst=True)
+            chunk['state'] = chunk['state'].str.strip().str.title()
+            chunk['district'] = chunk['district'].str.strip().str.title()
+            chunk['pincode'] = chunk['pincode'].astype(str)
+            
+            # Drop negative counts
+            chunk = chunk[(chunk['age_0_5'] >= 0) & (chunk['age_5_17'] >= 0) & (chunk['age_18_greater'] >= 0)]
+            
+            # State mapping and normalization inside the chunk
+            chunk['state'] = chunk['state'].replace('100000', np.nan)
+            chunk = chunk.dropna(subset=['state'])
+            chunk['state'] = chunk['state'].replace(STATE_MAPPING).replace(MERGE_UT_MAPPING)
+            
+            # Drop duplicates within the chunk to save memory
+            chunk = chunk.drop_duplicates(subset=['date', 'state', 'district', 'pincode', 'age_0_5', 'age_5_17', 'age_18_greater'])
+            df_list.append(chunk)
 
     if not df_list:
         return None
 
+    logger.info("Concatenating and performing global clean up for Enrolment data...")
     df = pd.concat(df_list, ignore_index=True)
     
-    # Drop exact duplicates
+    # Drop duplicates globally
     df = df.drop_duplicates(subset=['date', 'state', 'district', 'pincode', 'age_0_5', 'age_5_17', 'age_18_greater'])
-    
-    # State mapping
-    df['state'] = df['state'].replace('100000', np.nan)
-    df = df.dropna(subset=['state'])
-    df['state'] = df['state'].replace(STATE_MAPPING).replace(MERGE_UT_MAPPING)
     
     output_path = os.path.join(CLEANED_DATA_DIR, "aadhaar_enrolment_clean_final.csv")
     df.to_csv(output_path, index=False)
-    print(f"Enrolment data saved to {output_path}")
+    logger.info(f"Enrolment data saved to {output_path} (Shape: {df.shape})")
     return df
 
+
 def load_and_clean_update_data(dataset_type, valid_states):
-    print(f"Processing {dataset_type.capitalize()} Data...")
+    logger.info(f"Processing {dataset_type.capitalize()} Data...")
     
     folder_pattern = f"api_data_aadhar_{dataset_type}*"
     files = glob.glob(os.path.join(RAW_DATA_DIR, folder_pattern, "**", "*.csv"), recursive=True)
@@ -115,51 +129,63 @@ def load_and_clean_update_data(dataset_type, valid_states):
         files = glob.glob(os.path.join(RAW_DATA_DIR, f"api_data_aadhar_{dataset_type}*.csv"))
 
     if not files:
-        print(f"Warning: No {dataset_type} CSV files found.")
+        logger.warning(f"No {dataset_type} CSV files found.")
         return None
 
     df_list = []
     for f in files:
-        df = pd.read_csv(f)
-        df['date'] = pd.to_datetime(df['date'], dayfirst=True)
-        df['state'] = df['state'].str.strip().str.title()
-        df['district'] = df['district'].str.strip().str.title()
-        df['pincode'] = df['pincode'].astype(str)
-        
-        if dataset_type == 'demographic':
-            df = df[(df['demo_age_5_17'] >= 0) & (df['demo_age_17_'] >= 0)]
-        else:
-            df = df[(df['bio_age_5_17'] >= 0) & (df['bio_age_17_'] >= 0)]
+        logger.info(f"Reading {dataset_type} file: {f} in chunks...")
+        # Read in chunks to prevent memory bloat
+        for chunk in pd.read_csv(f, chunksize=100000):
+            chunk['date'] = pd.to_datetime(chunk['date'], dayfirst=True)
+            chunk['state'] = chunk['state'].str.strip().str.title()
+            chunk['district'] = chunk['district'].str.strip().str.title()
+            chunk['pincode'] = chunk['pincode'].astype(str)
             
-        df_list.append(df)
+            if dataset_type == 'demographic':
+                chunk = chunk[(chunk['demo_age_5_17'] >= 0) & (chunk['demo_age_17_'] >= 0)]
+            else:
+                chunk = chunk[(chunk['bio_age_5_17'] >= 0) & (chunk['bio_age_17_'] >= 0)]
+                
+            # State mapping and normalization
+            chunk['state'] = chunk['state'].replace('100000', np.nan)
+            chunk = chunk.dropna(subset=['state'])
+            chunk['state'] = chunk['state'].replace(STATE_MAPPING).replace(MERGE_UT_MAPPING)
+            
+            # Filter by valid states inside the chunk to drop extraneous data early
+            if valid_states is not None:
+                chunk = chunk[chunk['state'].isin(valid_states)].copy()
+                
+            # Drop duplicates within the chunk to save memory
+            if dataset_type == 'demographic':
+                subset = ['date', 'state', 'district', 'pincode', 'demo_age_5_17', 'demo_age_17_']
+            else:
+                subset = ['date', 'state', 'district', 'pincode', 'bio_age_5_17', 'bio_age_17_']
+            chunk = chunk.drop_duplicates(subset=subset)
+            
+            df_list.append(chunk)
 
     if not df_list:
         return None
 
+    logger.info(f"Concatenating and performing global clean up for {dataset_type} data...")
     df = pd.concat(df_list, ignore_index=True)
     
-    # Drop duplicates
+    # Drop duplicates globally
     if dataset_type == 'demographic':
         subset = ['date', 'state', 'district', 'pincode', 'demo_age_5_17', 'demo_age_17_']
     else:
         subset = ['date', 'state', 'district', 'pincode', 'bio_age_5_17', 'bio_age_17_']
     df = df.drop_duplicates(subset=subset)
 
-    # State mapping
-    df['state'] = df['state'].replace('100000', np.nan)
-    df['state'] = df['state'].replace(STATE_MAPPING).replace(MERGE_UT_MAPPING)
-    
-    # Filter by valid states
-    if valid_states is not None:
-        df = df[df['state'].isin(valid_states)].copy()
-        
     output_path = os.path.join(CLEANED_DATA_DIR, f"aadhaar_{dataset_type}_update_clean_final.csv")
     df.to_csv(output_path, index=False)
-    print(f"{dataset_type.capitalize()} data saved to {output_path}")
+    logger.info(f"{dataset_type.capitalize()} data saved to {output_path} (Shape: {df.shape})")
     return df
 
+
 def main():
-    print("Starting Data Cleaning Pipeline...")
+    logger.info("Starting Data Cleaning Pipeline...")
     validate_raw_inputs()
     extract_zips()
     
@@ -171,10 +197,13 @@ def main():
         
     load_and_clean_update_data('demographic', valid_states)
     load_and_clean_update_data('biometric', valid_states)
-    print("Data Cleaning Pipeline Complete ✅")
+    logger.info("Data Cleaning Pipeline Complete ✅")
+
 
 if __name__ == "__main__":
     try:
         main()
     except FileNotFoundError as exc:
-        print(exc)
+        logger.error(f"Missing required raw data files: {exc}")
+    except Exception as exc:
+        logger.exception(f"An unexpected error occurred during cleaning: {exc}")

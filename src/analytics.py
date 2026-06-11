@@ -305,11 +305,29 @@ def compute_anomalies(state_master: pd.DataFrame) -> pd.DataFrame:
         df["Governance_Distance"] > df["Governance_Distance"].quantile(0.9)
     )
 
+    # Robust Anomaly Detection integration
+    try:
+        from anomaly import run_advanced_anomaly_detection
+        advanced_res = run_advanced_anomaly_detection(df)
+        df_advanced = advanced_res["state_master_anomalies"]
+        df["IF_Anomaly_Score"] = df_advanced["IF_Anomaly_Score"]
+        df["ECOD_Anomaly_Score"] = df_advanced["ECOD_Anomaly_Score"]
+        df["Ensemble_Anomaly_Score"] = df_advanced["Ensemble_Anomaly_Score"]
+        df["Ensemble_Anomaly"] = df_advanced["Ensemble_Anomaly"]
+        df["Anomaly_Severity_Rank"] = df_advanced["Anomaly_Severity_Rank"]
+    except Exception as e:
+        df["IF_Anomaly_Score"] = 0.0
+        df["ECOD_Anomaly_Score"] = 0.0
+        df["Ensemble_Anomaly_Score"] = 0.0
+        df["Ensemble_Anomaly"] = 0
+        df["Anomaly_Severity_Rank"] = 0
+
     anomaly_cols = [
         "Anomaly_High_Stress",
         "Anomaly_Pressure_Mismatch",
         "Anomaly_Scale_Volatility",
         "Anomaly_Governance_Outlier",
+        "Ensemble_Anomaly",
     ]
     df["Anomaly_Flag_Count"] = df[anomaly_cols].sum(axis=1)
     return df.sort_values(
