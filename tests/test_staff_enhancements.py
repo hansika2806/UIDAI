@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 # 1. Pandera Schema Validation
 # ---------------------------------------------------------------------------
 
+
 class TestPanderaSchemas:
     """Data contract validation tests."""
 
@@ -28,15 +29,17 @@ class TestPanderaSchemas:
         """Valid enrolment DataFrame passes schema."""
         from schemas import EnrolmentSchema
 
-        df = pd.DataFrame({
-            "date": pd.to_datetime(["2023-01-01", "2023-02-01"]),
-            "state": ["Maharashtra", "Delhi"],
-            "district": ["Mumbai", "Central"],
-            "pincode": ["400001", "110001"],
-            "age_0_5": [100, 200],
-            "age_5_17": [150, 250],
-            "age_18_greater": [500, 800],
-        })
+        df = pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2023-01-01", "2023-02-01"]),
+                "state": ["Maharashtra", "Delhi"],
+                "district": ["Mumbai", "Central"],
+                "pincode": ["400001", "110001"],
+                "age_0_5": [100, 200],
+                "age_5_17": [150, 250],
+                "age_18_greater": [500, 800],
+            }
+        )
         validated = EnrolmentSchema.validate(df)
         assert len(validated) == 2
 
@@ -45,15 +48,17 @@ class TestPanderaSchemas:
         import pandera as pa
         from schemas import EnrolmentSchema
 
-        df = pd.DataFrame({
-            "date": pd.to_datetime(["2023-01-01"]),
-            "state": ["Maharashtra"],
-            "district": ["Mumbai"],
-            "pincode": ["400001"],
-            "age_0_5": [-5],       # invalid: negative
-            "age_5_17": [150],
-            "age_18_greater": [500],
-        })
+        df = pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2023-01-01"]),
+                "state": ["Maharashtra"],
+                "district": ["Mumbai"],
+                "pincode": ["400001"],
+                "age_0_5": [-5],  # invalid: negative
+                "age_5_17": [150],
+                "age_18_greater": [500],
+            }
+        )
         with pytest.raises(pa.errors.SchemaErrors):
             EnrolmentSchema.validate(df, lazy=True)
 
@@ -61,14 +66,16 @@ class TestPanderaSchemas:
         """Valid demographic DataFrame passes schema."""
         from schemas import DemographicUpdateSchema
 
-        df = pd.DataFrame({
-            "date": pd.to_datetime(["2023-03-01"]),
-            "state": ["Karnataka"],
-            "district": ["Bangalore"],
-            "pincode": ["560001"],
-            "demo_age_5_17": [300],
-            "demo_age_17_": [700],
-        })
+        df = pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2023-03-01"]),
+                "state": ["Karnataka"],
+                "district": ["Bangalore"],
+                "pincode": ["560001"],
+                "demo_age_5_17": [300],
+                "demo_age_17_": [700],
+            }
+        )
         validated = DemographicUpdateSchema.validate(df)
         assert "demo_age_5_17" in validated.columns
 
@@ -76,14 +83,16 @@ class TestPanderaSchemas:
         """Valid biometric DataFrame passes schema."""
         from schemas import BiometricUpdateSchema
 
-        df = pd.DataFrame({
-            "date": pd.to_datetime(["2023-04-01"]),
-            "state": ["Tamil Nadu"],
-            "district": ["Chennai"],
-            "pincode": ["600001"],
-            "bio_age_5_17": [200],
-            "bio_age_17_": [600],
-        })
+        df = pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2023-04-01"]),
+                "state": ["Tamil Nadu"],
+                "district": ["Chennai"],
+                "pincode": ["600001"],
+                "bio_age_5_17": [200],
+                "bio_age_17_": [600],
+            }
+        )
         validated = BiometricUpdateSchema.validate(df)
         assert len(validated) == 1
 
@@ -91,6 +100,7 @@ class TestPanderaSchemas:
 # ---------------------------------------------------------------------------
 # 2. Model Registry Save / Load
 # ---------------------------------------------------------------------------
+
 
 class TestModelRegistry:
     """Model serialization and deserialization tests."""
@@ -115,6 +125,7 @@ class TestModelRegistry:
     def test_load_missing_artifact_raises(self, tmp_path, monkeypatch):
         """Loading a non-existent artifact raises FileNotFoundError."""
         import registry
+
         monkeypatch.setattr(registry, "_DEFAULT_MODEL_DIR", str(tmp_path))
 
         with pytest.raises(FileNotFoundError):
@@ -124,6 +135,7 @@ class TestModelRegistry:
         """list_artifacts returns all saved artifact names."""
         from sklearn.preprocessing import StandardScaler
         import registry
+
         monkeypatch.setattr(registry, "_DEFAULT_MODEL_DIR", str(tmp_path))
 
         scaler = StandardScaler().fit([[1, 2]])
@@ -138,6 +150,7 @@ class TestModelRegistry:
         """Loaded artifact preserves its original type."""
         from sklearn.mixture import GaussianMixture
         import registry
+
         monkeypatch.setattr(registry, "_DEFAULT_MODEL_DIR", str(tmp_path))
 
         gmm = GaussianMixture(n_components=2, random_state=42)
@@ -153,6 +166,7 @@ class TestModelRegistry:
 # ---------------------------------------------------------------------------
 # 3. Drift Monitoring (KS Test + PSI)
 # ---------------------------------------------------------------------------
+
 
 class TestDriftMonitoring:
     """Statistical drift detection tests."""
@@ -187,9 +201,7 @@ class TestDriftMonitoring:
         """KS test with very small series returns insufficient_data severity."""
         from drift import detect_covariate_drift
 
-        result = detect_covariate_drift(
-            pd.Series([1.0]), pd.Series([2.0]), alpha=0.05
-        )
+        result = detect_covariate_drift(pd.Series([1.0]), pd.Series([2.0]), alpha=0.05)
         assert result["severity"] == "insufficient_data"
 
     def test_psi_stable_identical_distributions(self):
@@ -206,8 +218,8 @@ class TestDriftMonitoring:
         from drift import calculate_psi, PSI_WARNING
 
         np.random.seed(7)
-        baseline = np.random.beta(2, 5, 100)          # skewed left
-        current = np.random.beta(5, 2, 100)           # skewed right
+        baseline = np.random.beta(2, 5, 100)  # skewed left
+        current = np.random.beta(5, 2, 100)  # skewed right
 
         psi = calculate_psi(baseline, current)
 
@@ -217,17 +229,18 @@ class TestDriftMonitoring:
         """run_drift_check returns empty DataFrame when no baseline exists."""
         from drift import run_drift_check
 
-        df = pd.DataFrame({
-            "AMI": [0.5, 0.6, 0.7],
-            "UPI": [0.3, 0.4, 0.5],
-            "VSI": [0.2, 0.3, 0.4],
-            "TPS": [0.8, 0.7, 0.6],
-        })
+        df = pd.DataFrame(
+            {
+                "AMI": [0.5, 0.6, 0.7],
+                "UPI": [0.3, 0.4, 0.5],
+                "VSI": [0.2, 0.3, 0.4],
+                "TPS": [0.8, 0.7, 0.6],
+            }
+        )
 
         # Point to a non-existent path
         result = run_drift_check(
-            df,
-            baseline_path=str(tmp_path / "nonexistent_baseline.csv")
+            df, baseline_path=str(tmp_path / "nonexistent_baseline.csv")
         )
         assert result.empty or result is None or isinstance(result, pd.DataFrame)
 
@@ -235,12 +248,14 @@ class TestDriftMonitoring:
         """run_drift_check produces a drift report when a baseline exists."""
         from drift import run_drift_check
 
-        baseline = pd.DataFrame({
-            "AMI": np.random.normal(0.5, 0.1, 36),
-            "UPI": np.random.normal(0.4, 0.1, 36),
-            "VSI": np.random.normal(0.3, 0.1, 36),
-            "TPS": np.random.normal(0.7, 0.1, 36),
-        })
+        baseline = pd.DataFrame(
+            {
+                "AMI": np.random.normal(0.5, 0.1, 36),
+                "UPI": np.random.normal(0.4, 0.1, 36),
+                "VSI": np.random.normal(0.3, 0.1, 36),
+                "TPS": np.random.normal(0.7, 0.1, 36),
+            }
+        )
         baseline_path = str(tmp_path / "baseline.csv")
         baseline.to_csv(baseline_path, index=False)
 

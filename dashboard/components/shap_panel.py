@@ -6,7 +6,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-ANALYSIS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "analysis")
+ANALYSIS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "analysis",
+)
 
 FEATURE_NAME_MAP = {
     "E_total": "Total Enrollments",
@@ -44,8 +48,8 @@ def render_shap_panel() -> None:
     st.subheader("🔮 ML Interpretability & Feature Attribution (SHAP)")
     st.markdown(
         '<div class="panel-note"><strong>SHAP (SHapley Additive exPlanations)</strong> uses game theory to decompose the '
-        'contributions of various raw metrics to the composite <strong>Priority Score</strong>. This explains '
-        '<em>why</em> a particular state is flagged for attention, rather than just showing the score.</div>',
+        "contributions of various raw metrics to the composite <strong>Priority Score</strong>. This explains "
+        "<em>why</em> a particular state is flagged for attention, rather than just showing the score.</div>",
         unsafe_allow_html=True,
     )
 
@@ -53,7 +57,9 @@ def render_shap_panel() -> None:
     feat_imp = _load_feature_importance()
 
     if shap_summary is None or feat_imp is None:
-        st.warning("SHAP explanation data not available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "SHAP explanation data not available. Run the advanced analytics pipeline first."
+        )
         return
 
     # Two columns: global feature importance on left, local waterfall on right
@@ -66,7 +72,11 @@ def render_shap_panel() -> None:
         )
 
         display_feat = feat_imp.copy()
-        display_feat["feature_readable"] = display_feat["feature"].map(FEATURE_NAME_MAP).fillna(display_feat["feature"])
+        display_feat["feature_readable"] = (
+            display_feat["feature"]
+            .map(FEATURE_NAME_MAP)
+            .fillna(display_feat["feature"])
+        )
 
         fig_imp = px.bar(
             display_feat.sort_values("importance_pct"),
@@ -76,10 +86,15 @@ def render_shap_panel() -> None:
             title="Global Feature Impact (% of total attribution)",
             color="importance_pct",
             color_continuous_scale="Viridis",
-            labels={"importance_pct": "Relative Importance (%)", "feature_readable": "Feature Name"},
+            labels={
+                "importance_pct": "Relative Importance (%)",
+                "feature_readable": "Feature Name",
+            },
             template="plotly_white",
         )
-        fig_imp.update_layout(height=450, margin=dict(l=20, r=20, t=50, b=20), coloraxis_showscale=False)
+        fig_imp.update_layout(
+            height=450, margin=dict(l=20, r=20, t=50, b=20), coloraxis_showscale=False
+        )
         st.plotly_chart(fig_imp, use_container_width=True)
 
     with right:
@@ -107,7 +122,11 @@ def render_shap_panel() -> None:
         t3_val = row["top_3_shap"]
 
         # Calculate remainder
-        top_3_sum = (t1_val if pd.notna(t1_val) else 0) + (t2_val if pd.notna(t2_val) else 0) + (t3_val if pd.notna(t3_val) else 0)
+        top_3_sum = (
+            (t1_val if pd.notna(t1_val) else 0)
+            + (t2_val if pd.notna(t2_val) else 0)
+            + (t3_val if pd.notna(t3_val) else 0)
+        )
         other_val = shap_sum - top_3_sum
 
         # Human-readable labels
@@ -115,23 +134,35 @@ def render_shap_panel() -> None:
             return FEATURE_NAME_MAP.get(f, str(f)) if pd.notna(f) else "N/A"
 
         # Construct waterfall data
-        x_labels = ["Base Value", get_readable(t1_feat), get_readable(t2_feat), get_readable(t3_feat), "Other Features", "Predicted Score"]
+        x_labels = [
+            "Base Value",
+            get_readable(t1_feat),
+            get_readable(t2_feat),
+            get_readable(t3_feat),
+            "Other Features",
+            "Predicted Score",
+        ]
         y_vals = [base_val, t1_val, t2_val, t3_val, other_val, predicted_val]
         measures = ["absolute", "relative", "relative", "relative", "relative", "total"]
 
-        fig_waterfall = go.Figure(go.Waterfall(
-            name="SHAP Decomp",
-            orientation="v",
-            measure=measures,
-            x=x_labels,
-            textposition="outside",
-            text=[f"{v:+.3f}" if m == "relative" else f"{v:.3f}" for v, m in zip(y_vals, measures)],
-            y=y_vals,
-            connector={"line": {"color": "rgb(63, 63, 63)"}},
-            decreasing={"marker": {"color": "#ef4444"}},
-            increasing={"marker": {"color": "#10b981"}},
-            totals={"marker": {"color": "#3b82f6"}},
-        ))
+        fig_waterfall = go.Figure(
+            go.Waterfall(
+                name="SHAP Decomp",
+                orientation="v",
+                measure=measures,
+                x=x_labels,
+                textposition="outside",
+                text=[
+                    f"{v:+.3f}" if m == "relative" else f"{v:.3f}"
+                    for v, m in zip(y_vals, measures)
+                ],
+                y=y_vals,
+                connector={"line": {"color": "rgb(63, 63, 63)"}},
+                decreasing={"marker": {"color": "#ef4444"}},
+                increasing={"marker": {"color": "#10b981"}},
+                totals={"marker": {"color": "#3b82f6"}},
+            )
+        )
 
         fig_waterfall.update_layout(
             title=f"SHAP Waterfall Chart for {selected_state}",
@@ -146,21 +177,53 @@ def render_shap_panel() -> None:
     st.markdown("---")
     st.markdown("### 📊 Comprehensive SHAP Contributions Table")
     display_summary = shap_summary.copy()
-    display_summary["expected_value"] = display_summary["predicted_priority"] - display_summary["shap_sum"]
-    
+    display_summary["expected_value"] = (
+        display_summary["predicted_priority"] - display_summary["shap_sum"]
+    )
+
     # Map top feature columns to readable names
-    display_summary["top_1_feature"] = display_summary["top_1_feature"].map(FEATURE_NAME_MAP).fillna(display_summary["top_1_feature"])
-    display_summary["top_2_feature"] = display_summary["top_2_feature"].map(FEATURE_NAME_MAP).fillna(display_summary["top_2_feature"])
-    display_summary["top_3_feature"] = display_summary["top_3_feature"].map(FEATURE_NAME_MAP).fillna(display_summary["top_3_feature"])
+    display_summary["top_1_feature"] = (
+        display_summary["top_1_feature"]
+        .map(FEATURE_NAME_MAP)
+        .fillna(display_summary["top_1_feature"])
+    )
+    display_summary["top_2_feature"] = (
+        display_summary["top_2_feature"]
+        .map(FEATURE_NAME_MAP)
+        .fillna(display_summary["top_2_feature"])
+    )
+    display_summary["top_3_feature"] = (
+        display_summary["top_3_feature"]
+        .map(FEATURE_NAME_MAP)
+        .fillna(display_summary["top_3_feature"])
+    )
 
     # Round numerical columns
-    num_cols = ["predicted_priority", "expected_value", "shap_sum", "top_1_shap", "top_2_shap", "top_3_shap"]
+    num_cols = [
+        "predicted_priority",
+        "expected_value",
+        "shap_sum",
+        "top_1_shap",
+        "top_2_shap",
+        "top_3_shap",
+    ]
     for col in num_cols:
         if col in display_summary.columns:
             display_summary[col] = display_summary[col].round(4)
 
     st.dataframe(
-        display_summary[["state", "predicted_priority", "expected_value", "shap_sum", "top_1_feature", "top_1_shap", "top_2_feature", "top_2_shap"]],
+        display_summary[
+            [
+                "state",
+                "predicted_priority",
+                "expected_value",
+                "shap_sum",
+                "top_1_feature",
+                "top_1_shap",
+                "top_2_feature",
+                "top_2_shap",
+            ]
+        ],
         use_container_width=True,
         hide_index=True,
     )

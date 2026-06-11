@@ -24,14 +24,28 @@ def generate_static_plots() -> None:
     print("Generating static visualizations...")
 
     plt.figure(figsize=(11, 5))
-    plt.plot(national["year_month"], national["E_total"], label="Enrollments", linewidth=2.5)
-    plt.plot(national["year_month"], national["D_total"], label="Demographic Updates", linewidth=2)
-    plt.plot(national["year_month"], national["B_total"], label="Biometric Updates", linewidth=2)
+    plt.plot(
+        national["year_month"], national["E_total"], label="Enrollments", linewidth=2.5
+    )
+    plt.plot(
+        national["year_month"],
+        national["D_total"],
+        label="Demographic Updates",
+        linewidth=2,
+    )
+    plt.plot(
+        national["year_month"],
+        national["B_total"],
+        label="Biometric Updates",
+        linewidth=2,
+    )
     plt.xticks(rotation=45)
     plt.title("National UIDAI Activity Trend")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(ANALYSIS_DATA_DIR, "fig_national_activity_trend.png"), dpi=200)
+    plt.savefig(
+        os.path.join(ANALYSIS_DATA_DIR, "fig_national_activity_trend.png"), dpi=200
+    )
     plt.close()
 
     plt.figure(figsize=(10, 7))

@@ -94,7 +94,5 @@ def list_artifacts() -> List[str]:
     """Return the names of all persisted artifacts in the model store."""
     model_dir = get_model_dir()
     return [
-        f.replace(".joblib", "")
-        for f in os.listdir(model_dir)
-        if f.endswith(".joblib")
+        f.replace(".joblib", "") for f in os.listdir(model_dir) if f.endswith(".joblib")
     ]

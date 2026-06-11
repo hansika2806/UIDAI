@@ -61,7 +61,9 @@ def run_isolation_forest(
 
     # Convert to anomaly scores in [0, 1] where 1 = most anomalous
     # decision_function: negative = anomaly, positive = normal
-    anomaly_scores = 1.0 - (raw_scores - raw_scores.min()) / (raw_scores.max() - raw_scores.min() + 1e-10)
+    anomaly_scores = 1.0 - (raw_scores - raw_scores.min()) / (
+        raw_scores.max() - raw_scores.min() + 1e-10
+    )
 
     return {
         "labels": labels,  # -1 = anomaly, 1 = normal
@@ -86,6 +88,7 @@ def run_ecod(
     """
     try:
         from pyod.models.ecod import ECOD
+
         ecod = ECOD(contamination=0.1)
         ecod.fit(X)
         raw_scores = ecod.decision_scores_
@@ -104,7 +107,9 @@ def run_ecod(
             "anomaly_scores": anomaly_scores,
         }
     except ImportError:
-        logger.warning("pyod not installed; falling back to manual ECOD implementation.")
+        logger.warning(
+            "pyod not installed; falling back to manual ECOD implementation."
+        )
         return _manual_ecod(X)
 
 
@@ -213,7 +218,11 @@ def run_advanced_anomaly_detection(
     # Build result
     result = state_master.copy()
     result["IF_Anomaly_Score"] = if_result["anomaly_scores"]
-    result["IF_Anomaly_Label"] = (if_result["labels"] == -1).astype(int) if if_result["labels"].min() < 0 else if_result["labels"]
+    result["IF_Anomaly_Label"] = (
+        (if_result["labels"] == -1).astype(int)
+        if if_result["labels"].min() < 0
+        else if_result["labels"]
+    )
     result["ECOD_Anomaly_Score"] = ecod_result["anomaly_scores"]
     result["ECOD_Anomaly_Label"] = ecod_result["labels"]
     result["Ensemble_Anomaly_Score"] = ensemble_scores
@@ -223,12 +232,14 @@ def run_advanced_anomaly_detection(
     result["Ensemble_Anomaly"] = (ensemble_scores >= threshold).astype(int)
 
     # Severity ranking
-    result["Anomaly_Severity_Rank"] = result["Ensemble_Anomaly_Score"].rank(
-        ascending=False, method="min"
-    ).astype(int)
+    result["Anomaly_Severity_Rank"] = (
+        result["Ensemble_Anomaly_Score"].rank(ascending=False, method="min").astype(int)
+    )
 
     n_anomalies = result["Ensemble_Anomaly"].sum()
-    logger.info(f"Advanced anomaly detection complete: {n_anomalies} anomalies flagged.")
+    logger.info(
+        f"Advanced anomaly detection complete: {n_anomalies} anomalies flagged."
+    )
 
     return {
         "state_master_anomalies": result,
@@ -239,4 +250,3 @@ def run_advanced_anomaly_detection(
         "scaler": scaler,
         "iso_forest": iso_forest,
     }
-

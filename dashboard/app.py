@@ -32,7 +32,6 @@ from components.causal_panel import render_causal_panel
 from components.shap_panel import render_shap_panel
 from components.simulator_panel import render_simulator_panel
 
-
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 ANALYSIS_DATA_DIR = os.path.join(BASE_DIR, "data", "analysis")
 CLEANED_DATA_DIR = os.path.join(BASE_DIR, "data", "cleaned")
@@ -43,7 +42,10 @@ SOURCE_FILES = {
         "demographic_analysis_ready.csv",
         "aadhaar_demographic_update_clean_final.csv",
     ],
-    "biometric": ["biometric_analysis_ready.csv", "aadhaar_biometric_update_clean_final.csv"],
+    "biometric": [
+        "biometric_analysis_ready.csv",
+        "aadhaar_biometric_update_clean_final.csv",
+    ],
 }
 
 EXPECTED_RAW_FILES = [
@@ -136,7 +138,9 @@ def load_source_frames() -> Dict[str, pd.DataFrame]:
     for key, candidates in SOURCE_FILES.items():
         frame = None
         for filename in candidates:
-            base_dir = ANALYSIS_DATA_DIR if "analysis_ready" in filename else CLEANED_DATA_DIR
+            base_dir = (
+                ANALYSIS_DATA_DIR if "analysis_ready" in filename else CLEANED_DATA_DIR
+            )
             path = os.path.join(base_dir, filename)
             if os.path.exists(path):
                 frame = pd.read_csv(path, parse_dates=["date"])
@@ -184,14 +188,28 @@ def render_setup_status() -> None:
     st.subheader("Project Status")
     status_cols = st.columns(3)
     with status_cols[0]:
-        metric_card("Raw UIDAI Files", "Ready" if raw_ok else "Missing", "Zip or CSV drops in data/raw")
+        metric_card(
+            "Raw UIDAI Files",
+            "Ready" if raw_ok else "Missing",
+            "Zip or CSV drops in data/raw",
+        )
     with status_cols[1]:
-        metric_card("Cleaned Datasets", "Ready" if cleaned_ok else "Missing", "Outputs from data_cleaning.py")
+        metric_card(
+            "Cleaned Datasets",
+            "Ready" if cleaned_ok else "Missing",
+            "Outputs from data_cleaning.py",
+        )
     with status_cols[2]:
-        metric_card("Analysis Bundle", "Ready" if analysis_ok else "Missing", "Outputs from feature_engineering.py")
+        metric_card(
+            "Analysis Bundle",
+            "Ready" if analysis_ok else "Missing",
+            "Outputs from feature_engineering.py",
+        )
 
     if not raw_ok:
-        st.error("Raw UIDAI files are not present yet. The app cannot build cleaned or analysis datasets until those files are added.")
+        st.error(
+            "Raw UIDAI files are not present yet. The app cannot build cleaned or analysis datasets until those files are added."
+        )
         st.markdown("Expected files in `data/raw/`:")
         for item in EXPECTED_RAW_FILES:
             st.markdown(f"- `{item}`")
@@ -208,14 +226,20 @@ def render_setup_status() -> None:
                 else:
                     st.cache_data.clear()
                     if cleaned_assets_ready():
-                        st.success("Data cleaning finished. You can now generate the analysis bundle.")
+                        st.success(
+                            "Data cleaning finished. You can now generate the analysis bundle."
+                        )
                         st.rerun()
                     else:
-                        st.error("Data cleaning completed without producing all cleaned datasets.")
+                        st.error(
+                            "Data cleaning completed without producing all cleaned datasets."
+                        )
         return
 
     if cleaned_ok and not analysis_ok:
-        st.warning("Cleaned datasets are ready. Generate the analysis bundle to unlock the dashboard.")
+        st.warning(
+            "Cleaned datasets are ready. Generate the analysis bundle to unlock the dashboard."
+        )
         if st.button("Generate Analysis Outputs", type="primary"):
             with st.spinner("Generating analytical features..."):
                 try:
@@ -228,7 +252,9 @@ def render_setup_status() -> None:
                         st.success("Analysis pipeline finished. Loading dashboard...")
                         st.rerun()
                     else:
-                        st.error("The pipeline ran but did not create the required analysis files.")
+                        st.error(
+                            "The pipeline ran but did not create the required analysis files."
+                        )
         return
 
 
@@ -284,9 +310,7 @@ if not analysis_assets_ready():
 try:
     source_frames = load_source_frames()
 except FileNotFoundError:
-    st.error(
-        "Source datasets are missing. Run the raw data cleaning pipeline first."
-    )
+    st.error("Source datasets are missing. Run the raw data cleaning pipeline first.")
     st.stop()
 
 # Date range selection
@@ -319,7 +343,9 @@ end_date = pd.Timestamp(selected_dates[1])
 # Recompute index features based on filters
 with st.spinner("Recomputing metrics for the active filters..."):
     try:
-        outputs = build_outputs_for_filters(source_frames, start_date, end_date, selected_states)
+        outputs = build_outputs_for_filters(
+            source_frames, start_date, end_date, selected_states
+        )
     except ValueError as exc:
         st.error(str(exc))
         st.stop()
@@ -337,7 +363,9 @@ selected_categories = st.sidebar.multiselect(
     default=policy_categories,
 )
 if selected_categories:
-    state_master = state_master[state_master["Policy_Category"].isin(selected_categories)]
+    state_master = state_master[
+        state_master["Policy_Category"].isin(selected_categories)
+    ]
     anomalies = anomalies[anomalies["Policy_Category"].isin(selected_categories)]
     state_month = state_month[state_month["state"].isin(state_master["state"])]
     pareto = pareto[pareto["state"].isin(state_master["state"])]
@@ -346,7 +374,9 @@ if state_master.empty:
     st.error("No states remain after category filtering.")
     st.stop()
 
-selected_state = st.sidebar.selectbox("State Drilldown", options=sorted(state_master["state"].tolist()))
+selected_state = st.sidebar.selectbox(
+    "State Drilldown", options=sorted(state_master["state"].tolist())
+)
 
 # Render top-level metric blocks
 render_kpis(state_master, state_month, anomalies)

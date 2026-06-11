@@ -55,7 +55,9 @@ def select_k_via_bic(
         k_max = min(4, k_range[1])
         k_min = min(k_range[0], k_max)
         k_range = (k_min, k_max)
-        logger.info(f"Small dataset detected (N={n_samples} < 50). Capping GMM K range to {k_range}.")
+        logger.info(
+            f"Small dataset detected (N={n_samples} < 50). Capping GMM K range to {k_range}."
+        )
 
     results = []
     for k in range(k_range[0], k_range[1] + 1):
@@ -66,25 +68,29 @@ def select_k_via_bic(
             random_state=42,
         )
         gmm.fit(X)
-        
+
         # Calculate number of GMM parameters for full covariance:
         # P = K * (1 + D + D*(D+1)/2) - 1
         n_params = k * (1 + D + D * (D + 1) // 2) - 1
         aic = gmm.aic(X)
         bic = gmm.bic(X)
-        
+
         if n_samples - n_params - 1 > 0:
-            aicc = aic + (2.0 * n_params**2 + 2.0 * n_params) / (n_samples - n_params - 1)
+            aicc = aic + (2.0 * n_params**2 + 2.0 * n_params) / (
+                n_samples - n_params - 1
+            )
         else:
             aicc = np.inf
-            
-        results.append({
-            "K": k,
-            "BIC": bic,
-            "AIC": aic,
-            "AICc": aicc,
-            "log_likelihood": gmm.score(X) * n_samples,
-        })
+
+        results.append(
+            {
+                "K": k,
+                "BIC": bic,
+                "AIC": aic,
+                "AICc": aicc,
+                "log_likelihood": gmm.score(X) * n_samples,
+            }
+        )
 
     bic_df = pd.DataFrame(results)
     optimal_k = int(bic_df.loc[bic_df["AICc"].idxmin(), "K"])
@@ -220,7 +226,9 @@ def assign_governance_labels(
         # Unpredictable: low TPS
         scores["Unpredictable System"] = 1 - c["TPS"]
         # Balanced: moderate everything
-        scores["Balanced / Transitional"] = 1 - abs(c["AMI"] - 0.5) - abs(c["UPI"] - 0.5)
+        scores["Balanced / Transitional"] = (
+            1 - abs(c["AMI"] - 0.5) - abs(c["UPI"] - 0.5)
+        )
 
         # Sort by score descending, pick first unused
         for label in sorted(scores, key=scores.get, reverse=True):
@@ -249,6 +257,7 @@ def compute_umap_projection(
     """
     try:
         import umap
+
         reducer = umap.UMAP(
             n_components=2,
             n_neighbors=min(n_neighbors, X.shape[0] - 1),
@@ -260,10 +269,12 @@ def compute_umap_projection(
     except ImportError:
         logger.warning("umap-learn not installed; returning PCA fallback.")
         from sklearn.decomposition import PCA
+
         return PCA(n_components=2, random_state=42).fit_transform(X)
     except Exception as e:
         logger.warning(f"UMAP failed ({e}); returning PCA fallback.")
         from sklearn.decomposition import PCA
+
         return PCA(n_components=2, random_state=42).fit_transform(X)
 
 
@@ -306,7 +317,9 @@ def run_governance_clustering(
 
     # ── Anchor cluster ordering by AMI centroid (Fix: label switching) ──
     new_order = anchor_cluster_order(gmm, indicator_cols, anchor_col="AMI")
-    hard_labels, probabilities = remap_gmm_predictions(hard_labels, probabilities, new_order)
+    hard_labels, probabilities = remap_gmm_predictions(
+        hard_labels, probabilities, new_order
+    )
     # Reorder GMM means/covariances to match the anchored order
     anchored_means = gmm.means_[new_order]
     # Build anchored label map (anchored cluster 0 = highest AMI = most mature)
@@ -319,8 +332,10 @@ def run_governance_clustering(
     # 5. Governance labels (on anchored centroids)
     label_map = assign_governance_labels(gmm, indicator_cols)
     # Remap label_map keys to anchored ordering
-    anchored_label_map = {new_rank: label_map.get(int(old_k), f"Cluster {new_rank}")
-                          for new_rank, old_k in enumerate(new_order)}
+    anchored_label_map = {
+        new_rank: label_map.get(int(old_k), f"Cluster {new_rank}")
+        for new_rank, old_k in enumerate(new_order)
+    }
 
     # 6. UMAP
     umap_coords = compute_umap_projection(X)
@@ -338,7 +353,9 @@ def run_governance_clustering(
     result["UMAP_2"] = umap_coords[:, 1]
 
     # Cluster centroid summary (anchored)
-    anchored_centroids_df["Governance_Label"] = anchored_centroids_df["Cluster"].map(anchored_label_map)
+    anchored_centroids_df["Governance_Label"] = anchored_centroids_df["Cluster"].map(
+        anchored_label_map
+    )
     anchored_centroids_df["Cluster_Size"] = [
         int((hard_labels == k).sum()) for k in range(optimal_k)
     ]

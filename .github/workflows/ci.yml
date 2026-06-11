@@ -27,10 +27,10 @@ jobs:
         pip install -r requirements.txt
     
     - name: Run Black (Code Formatting Check)
-      run: black --check --diff src/ dashboard/
+      run: black --check --diff src/ dashboard/ tests/
     
     - name: Run Flake8 (Linting)
-      run: flake8 src/ dashboard/ --max-line-length=100 --extend-ignore=E203,W503
+      run: flake8 src/ dashboard/
     
     - name: Run Ruff (Fast Linting)
       run: ruff check src/ dashboard/

@@ -36,7 +36,9 @@ PSI_WARNING = 0.25
 
 DRIFT_REPORT_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "data", "analysis", "drift_report.csv"
+    "data",
+    "analysis",
+    "drift_report.csv",
 )
 
 
@@ -177,7 +179,9 @@ def run_drift_check(
     if baseline_path is None:
         baseline_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "data", "analysis", "state_master_full.csv"
+            "data",
+            "analysis",
+            "state_master_full.csv",
         )
 
     rows = []
@@ -207,15 +211,17 @@ def run_drift_check(
             alpha=alpha,
         )
 
-        rows.append({
-            "feature": col,
-            "check_type": "KS_covariate",
-            "ks_stat": result.get("ks_stat"),
-            "p_value": result.get("p_value"),
-            "drift_detected": result.get("drift_detected"),
-            "severity": result.get("severity"),
-            "psi": float("nan"),
-        })
+        rows.append(
+            {
+                "feature": col,
+                "check_type": "KS_covariate",
+                "ks_stat": result.get("ks_stat"),
+                "p_value": result.get("p_value"),
+                "drift_detected": result.get("drift_detected"),
+                "severity": result.get("severity"),
+                "psi": float("nan"),
+            }
+        )
 
         if result["drift_detected"]:
             logger.warning(
@@ -230,12 +236,16 @@ def run_drift_check(
             )
 
     # --- Concept Drift (PSI on ensemble anomaly score, if available) ---
-    if "Ensemble_Anomaly_Score" in baseline_df.columns and \
-       "Ensemble_Anomaly_Score" in current_state_master.columns:
+    if (
+        "Ensemble_Anomaly_Score" in baseline_df.columns
+        and "Ensemble_Anomaly_Score" in current_state_master.columns
+    ):
 
         psi_score = calculate_psi(
             baseline_probs=baseline_df["Ensemble_Anomaly_Score"].dropna().values,
-            current_probs=current_state_master["Ensemble_Anomaly_Score"].dropna().values,
+            current_probs=current_state_master["Ensemble_Anomaly_Score"]
+            .dropna()
+            .values,
         )
 
         if psi_score < PSI_STABLE:
@@ -245,15 +255,17 @@ def run_drift_check(
         else:
             severity = "critical"
 
-        rows.append({
-            "feature": "Ensemble_Anomaly_Score",
-            "check_type": "PSI_concept",
-            "ks_stat": float("nan"),
-            "p_value": float("nan"),
-            "drift_detected": psi_score >= PSI_STABLE,
-            "severity": severity,
-            "psi": psi_score,
-        })
+        rows.append(
+            {
+                "feature": "Ensemble_Anomaly_Score",
+                "check_type": "PSI_concept",
+                "ks_stat": float("nan"),
+                "p_value": float("nan"),
+                "drift_detected": psi_score >= PSI_STABLE,
+                "severity": severity,
+                "psi": psi_score,
+            }
+        )
 
         if psi_score >= PSI_WARNING:
             logger.warning(

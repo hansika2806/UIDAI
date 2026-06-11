@@ -25,11 +25,18 @@ logger = logging.getLogger(__name__)
 
 # Features used to predict Priority_Score
 FEATURE_COLS = [
-    "E_total", "D_total", "B_total",
-    "Total_Activity", "log_activity",
-    "Avg_Update_Ratio", "Avg_Demo_Ratio", "Avg_Bio_Ratio",
-    "E_child_share", "E_minor_share",
-    "D_adult_share", "B_adult_share",
+    "E_total",
+    "D_total",
+    "B_total",
+    "Total_Activity",
+    "log_activity",
+    "Avg_Update_Ratio",
+    "Avg_Demo_Ratio",
+    "Avg_Bio_Ratio",
+    "E_child_share",
+    "E_minor_share",
+    "D_adult_share",
+    "B_adult_share",
     "Active_Months",
 ]
 
@@ -54,7 +61,9 @@ def train_priority_model(
     # Only use features that exist in the dataframe
     available_features = [c for c in feature_cols if c in state_master.columns]
     if len(available_features) < 3:
-        logger.warning(f"Only {len(available_features)} features available; skipping SHAP.")
+        logger.warning(
+            f"Only {len(available_features)} features available; skipping SHAP."
+        )
         return None
 
     if target_col not in state_master.columns:
@@ -76,7 +85,9 @@ def train_priority_model(
     model.fit(X, y)
 
     r2 = model.score(X, y)
-    logger.info(f"Priority model trained: R² = {r2:.4f} on {len(available_features)} features.")
+    logger.info(
+        f"Priority model trained: R² = {r2:.4f} on {len(available_features)} features."
+    )
 
     model._feature_names = available_features
     return model
@@ -99,23 +110,34 @@ def compute_shap_values(
 
     try:
         import shap
+
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(X)
         expected_value = explainer.expected_value
 
-        logger.info(f"SHAP values computed for {X.shape[0]} states, {X.shape[1]} features.")
+        logger.info(
+            f"SHAP values computed for {X.shape[0]} states, {X.shape[1]} features."
+        )
 
         return {
             "shap_values": shap_values,
-            "expected_value": float(expected_value.item()) if hasattr(expected_value, "item") else float(expected_value),
+            "expected_value": (
+                float(expected_value.item())
+                if hasattr(expected_value, "item")
+                else float(expected_value)
+            ),
             "feature_names": feature_cols,
             "X": X,
         }
     except ImportError:
-        logger.warning("shap library not installed; falling back to permutation importance.")
+        logger.warning(
+            "shap library not installed; falling back to permutation importance."
+        )
         return _fallback_importance(model, X, feature_cols, state_master)
     except Exception as e:
-        logger.warning(f"SHAP computation failed ({e}); falling back to permutation importance.")
+        logger.warning(
+            f"SHAP computation failed ({e}); falling back to permutation importance."
+        )
         return _fallback_importance(model, X, feature_cols, state_master)
 
 
@@ -198,12 +220,20 @@ def build_feature_importance_df(shap_result: Dict) -> pd.DataFrame:
 
     mean_abs_shap = np.mean(np.abs(shap_values), axis=0)
 
-    df = pd.DataFrame({
-        "feature": feature_names,
-        "mean_abs_shap": mean_abs_shap,
-    }).sort_values("mean_abs_shap", ascending=False).reset_index(drop=True)
+    df = (
+        pd.DataFrame(
+            {
+                "feature": feature_names,
+                "mean_abs_shap": mean_abs_shap,
+            }
+        )
+        .sort_values("mean_abs_shap", ascending=False)
+        .reset_index(drop=True)
+    )
 
-    df["importance_pct"] = 100.0 * df["mean_abs_shap"] / (df["mean_abs_shap"].sum() + 1e-10)
+    df["importance_pct"] = (
+        100.0 * df["mean_abs_shap"] / (df["mean_abs_shap"].sum() + 1e-10)
+    )
 
     return df
 

@@ -7,7 +7,9 @@ import pandas as pd
 from analytics import build_analysis_outputs
 from config import ANALYSIS_DATA_DIR, CLEANED_DATA_DIR
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------- #
@@ -15,7 +17,8 @@ logger = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 try:
     from schemas import EnrolmentSchema, DemographicUpdateSchema, BiometricUpdateSchema
-    import pandera.pandas as pa
+    import pandera.pandas  # noqa: F401 — presence check only
+
     _SCHEMAS_AVAILABLE = True
 except ImportError:
     _SCHEMAS_AVAILABLE = False
@@ -33,11 +36,12 @@ def _validate_frame(df: pd.DataFrame, schema_class, name: str) -> pd.DataFrame:
     if not _SCHEMAS_AVAILABLE:
         return df
     try:
-        import pandera as pa
+        import pandera.pandas as _pa
+
         validated = schema_class.validate(df, lazy=True)
         logger.info(f"[Schema] ✓ '{name}' passed data contract validation.")
         return validated
-    except pa.errors.SchemaErrors as err:
+    except _pa.errors.SchemaErrors as err:
         logger.warning(
             f"[Schema] ⚠️  Data contract violations detected in '{name}' "
             f"({len(err.failure_cases)} failures). Pipeline continues with raw data.\n"
@@ -70,9 +74,15 @@ def load_cleaned_inputs() -> Dict[str, pd.DataFrame]:
     # --- Pandera validation ---
     logger.info("Running Pandera data contract validation on cleaned inputs...")
     if _SCHEMAS_AVAILABLE:
-        frames["enrolment"]  = _validate_frame(frames["enrolment"],  EnrolmentSchema,        "enrolment")
-        frames["demographic"] = _validate_frame(frames["demographic"], DemographicUpdateSchema, "demographic")
-        frames["biometric"]   = _validate_frame(frames["biometric"],   BiometricUpdateSchema,   "biometric")
+        frames["enrolment"] = _validate_frame(
+            frames["enrolment"], EnrolmentSchema, "enrolment"
+        )
+        frames["demographic"] = _validate_frame(
+            frames["demographic"], DemographicUpdateSchema, "demographic"
+        )
+        frames["biometric"] = _validate_frame(
+            frames["biometric"], BiometricUpdateSchema, "biometric"
+        )
 
     return frames
 
@@ -101,9 +111,7 @@ def save_outputs(outputs: Dict[str, pd.DataFrame]) -> None:
             outputs[key].to_csv(os.path.join(ANALYSIS_DATA_DIR, filename), index=False)
 
     state_master = outputs["state_master_full"].copy()
-    state_master[
-        ["state", "AMI", "UPI", "VSI", "TPS", "Policy_Category"]
-    ].to_csv(
+    state_master[["state", "AMI", "UPI", "VSI", "TPS", "Policy_Category"]].to_csv(
         os.path.join(ANALYSIS_DATA_DIR, "state_policy_indicators_policy_view.csv"),
         index=False,
     )
@@ -150,6 +158,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     logger.info("=" * 60)
     try:
         from robust_indicators import compute_all_robust_outputs
+
         robust_out = compute_all_robust_outputs(state_master, state_month)
         advanced["robust_indicators"] = robust_out["state_master_robust"]
         advanced["entropy_details"] = robust_out["entropy_details"]
@@ -165,6 +174,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     try:
         from clustering import run_governance_clustering
         from registry import save_model_artifact
+
         cluster_out = run_governance_clustering(state_master)
         advanced["clustered_states"] = cluster_out["state_master_clustered"]
         advanced["bic_selection"] = cluster_out["bic_selection"]
@@ -183,6 +193,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     logger.info("=" * 60)
     try:
         from causal import run_causal_analysis
+
         causal_out = run_causal_analysis(state_month)
         advanced["granger_results"] = causal_out["granger_results"]
         advanced["cusum_results"] = causal_out["cusum_results"]
@@ -195,7 +206,10 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     logger.info("=" * 60)
     try:
         from forecasting import run_demand_forecasting
-        forecast_out = run_demand_forecasting(state_month, target_col="D_total", horizon=12)
+
+        forecast_out = run_demand_forecasting(
+            state_month, target_col="D_total", horizon=12
+        )
         advanced["forecast_results"] = forecast_out["forecast_df"]
         advanced["forecast_model_summary"] = forecast_out["model_summary"]
     except Exception as e:
@@ -208,6 +222,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     try:
         from anomaly import run_advanced_anomaly_detection
         from registry import save_model_artifact
+
         anomaly_out = run_advanced_anomaly_detection(state_master)
         advanced["advanced_anomalies"] = anomaly_out["state_master_anomalies"]
         # Persist fitted estimators
@@ -224,6 +239,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     try:
         from interpretability import run_interpretability
         from registry import save_model_artifact
+
         shap_out = run_interpretability(state_master)
         advanced["shap_summary"] = shap_out["shap_summary"]
         advanced["feature_importance"] = shap_out["feature_importance"]
@@ -240,6 +256,7 @@ def run_advanced_analytics(outputs: Dict[str, pd.DataFrame]) -> Dict[str, object
     logger.info("=" * 60)
     try:
         from drift import run_drift_check
+
         drift_df = run_drift_check(state_master)
         if drift_df is not None and not drift_df.empty:
             advanced["drift_report"] = drift_df

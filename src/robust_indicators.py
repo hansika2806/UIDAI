@@ -91,12 +91,14 @@ def compute_entropy_tps(state_month: pd.DataFrame) -> pd.DataFrame:
         df_s = state_month[state_month["state"] == state]
 
         if len(df_s) < 3:
-            results.append({
-                "state": state,
-                "entropy_raw": np.nan,
-                "entropy_normalized": np.nan,
-                "TPS_entropy": np.nan,
-            })
+            results.append(
+                {
+                    "state": state,
+                    "entropy_raw": np.nan,
+                    "entropy_normalized": np.nan,
+                    "TPS_entropy": np.nan,
+                }
+            )
             continue
 
         activity = df_s["Total_Activity"].values
@@ -105,17 +107,21 @@ def compute_entropy_tps(state_month: pd.DataFrame) -> pd.DataFrame:
         h_max = np.log2(len(hist_counts)) if len(hist_counts) > 1 else 1.0
         tps = 1.0 - (h / h_max) if h_max > 0 else 0.0
 
-        results.append({
-            "state": state,
-            "entropy_raw": h,
-            "entropy_normalized": h / h_max if h_max > 0 else 0.0,
-            "TPS_entropy": tps,
-        })
+        results.append(
+            {
+                "state": state,
+                "entropy_raw": h,
+                "entropy_normalized": h / h_max if h_max > 0 else 0.0,
+                "TPS_entropy": tps,
+            }
+        )
 
     return pd.DataFrame(results)
 
 
-def compute_robust_indicators(state_master: pd.DataFrame, state_month: pd.DataFrame) -> pd.DataFrame:
+def compute_robust_indicators(
+    state_master: pd.DataFrame, state_month: pd.DataFrame
+) -> pd.DataFrame:
     """Recompute AMI, UPI, VSI, TPS using robust statistical methods.
 
     Replaces min-max with MAD-sigmoid normalization and lag-corr TPS
@@ -137,7 +143,9 @@ def compute_robust_indicators(state_master: pd.DataFrame, state_month: pd.DataFr
         result["AMI_robust"] = 1.0 - mad_normalize_to_unit(raw_rank_sum)
 
     # --- Robust UPI: MAD-sigmoid of log update pressure ---
-    upi_raw = np.log1p(result["D_total"] + result["B_total"]) - np.log1p(result["E_total"])
+    upi_raw = np.log1p(result["D_total"] + result["B_total"]) - np.log1p(
+        result["E_total"]
+    )
     result["UPI_robust"] = mad_normalize_to_unit(upi_raw)
 
     # --- Robust VSI: MAD-sigmoid of ratio CV ---
@@ -146,11 +154,15 @@ def compute_robust_indicators(state_master: pd.DataFrame, state_month: pd.DataFr
     elif "VSI_raw" in result.columns:
         result["VSI_robust"] = mad_normalize_to_unit(result["VSI_raw"])
     else:
-        result["VSI_robust"] = mad_normalize_to_unit(result.get("VSI", pd.Series(0, index=result.index)))
+        result["VSI_robust"] = mad_normalize_to_unit(
+            result.get("VSI", pd.Series(0, index=result.index))
+        )
 
     # --- Entropy-based TPS ---
     entropy_df = compute_entropy_tps(state_month)
-    result = result.merge(entropy_df[["state", "TPS_entropy", "entropy_raw"]], on="state", how="left")
+    result = result.merge(
+        entropy_df[["state", "TPS_entropy", "entropy_raw"]], on="state", how="left"
+    )
     result["TPS_robust"] = result["TPS_entropy"].fillna(0.0)
 
     logger.info("Robust indicators computed successfully.")

@@ -3,10 +3,8 @@ Pandera schemas for raw cleaned UIDAI datasets.
 Enforces type consistency, non-negative bounds, and required columns.
 """
 
-import pandera.pandas as pa
 from pandera.pandas import DataFrameModel, Field
 from pandera.typing import Series
-import pandas as pd
 
 
 class EnrolmentSchema(DataFrameModel):

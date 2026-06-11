@@ -65,7 +65,9 @@ def build_indicator_heatmap(corr_df: pd.DataFrame, title: str) -> go.Figure:
     return fig
 
 
-def build_quadrant_chart(state_master: pd.DataFrame, highlight_state: str = "") -> go.Figure:
+def build_quadrant_chart(
+    state_master: pd.DataFrame, highlight_state: str = ""
+) -> go.Figure:
     fig = px.scatter(
         state_master,
         x="AMI",
@@ -83,8 +85,12 @@ def build_quadrant_chart(state_master: pd.DataFrame, highlight_state: str = "") 
         template="plotly_white",
         title="Governance Quadrant: Maturity vs Maintenance Pressure",
     )
-    fig.add_vline(x=state_master["AMI"].median(), line_dash="dash", line_color="#64748b")
-    fig.add_hline(y=state_master["UPI"].median(), line_dash="dash", line_color="#64748b")
+    fig.add_vline(
+        x=state_master["AMI"].median(), line_dash="dash", line_color="#64748b"
+    )
+    fig.add_hline(
+        y=state_master["UPI"].median(), line_dash="dash", line_color="#64748b"
+    )
     if highlight_state and highlight_state in set(state_master["state"]):
         chosen = state_master[state_master["state"] == highlight_state]
         fig.add_trace(
@@ -94,7 +100,9 @@ def build_quadrant_chart(state_master: pd.DataFrame, highlight_state: str = "") 
                 mode="markers+text",
                 text=chosen["state"],
                 textposition="top center",
-                marker=dict(size=18, color=PALETTE["coral"], line=dict(width=2, color="white")),
+                marker=dict(
+                    size=18, color=PALETTE["coral"], line=dict(width=2, color="white")
+                ),
                 name="Selected State",
             )
         )
@@ -105,9 +113,30 @@ def build_quadrant_chart(state_master: pd.DataFrame, highlight_state: str = "") 
 def build_state_month_chart(state_series: pd.DataFrame, state_name: str) -> go.Figure:
     chart_df = state_series.sort_values("year_month")
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=chart_df["year_month"], y=chart_df["E_total"], mode="lines", name="Enrollments"))
-    fig.add_trace(go.Scatter(x=chart_df["year_month"], y=chart_df["D_total"], mode="lines", name="Demographic Updates"))
-    fig.add_trace(go.Scatter(x=chart_df["year_month"], y=chart_df["B_total"], mode="lines", name="Biometric Updates"))
+    fig.add_trace(
+        go.Scatter(
+            x=chart_df["year_month"],
+            y=chart_df["E_total"],
+            mode="lines",
+            name="Enrollments",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=chart_df["year_month"],
+            y=chart_df["D_total"],
+            mode="lines",
+            name="Demographic Updates",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=chart_df["year_month"],
+            y=chart_df["B_total"],
+            mode="lines",
+            name="Biometric Updates",
+        )
+    )
     fig.update_layout(
         title=f"{state_name}: Monthly Activity Mix",
         template="plotly_white",
@@ -170,8 +199,14 @@ def build_stress_scale_chart(state_master: pd.DataFrame) -> go.Figure:
         template="plotly_white",
         title="Stress vs Scale Diagnostic",
     )
-    fig.add_hline(y=state_master["VSI"].median(), line_dash="dash", line_color="#94a3b8")
-    fig.add_vline(x=max(state_master["Total_Activity"].median(), 1), line_dash="dash", line_color="#94a3b8")
+    fig.add_hline(
+        y=state_master["VSI"].median(), line_dash="dash", line_color="#94a3b8"
+    )
+    fig.add_vline(
+        x=max(state_master["Total_Activity"].median(), 1),
+        line_dash="dash",
+        line_color="#94a3b8",
+    )
     fig.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
     return fig
 
@@ -223,10 +258,20 @@ def build_peer_comparison(state_master: pd.DataFrame, selected_state: str) -> go
     peer = state_master[metrics].median()
     fig = go.Figure()
     fig.add_trace(
-        go.Scatterpolar(r=[row[m] for m in metrics], theta=metrics, fill="toself", name=selected_state)
+        go.Scatterpolar(
+            r=[row[m] for m in metrics],
+            theta=metrics,
+            fill="toself",
+            name=selected_state,
+        )
     )
     fig.add_trace(
-        go.Scatterpolar(r=[peer[m] for m in metrics], theta=metrics, fill="toself", name="Median Peer")
+        go.Scatterpolar(
+            r=[peer[m] for m in metrics],
+            theta=metrics,
+            fill="toself",
+            name="Median Peer",
+        )
     )
     fig.update_layout(
         title=f"{selected_state}: Indicator Profile vs Median",
@@ -260,7 +305,10 @@ def build_national_trend_chart(national: pd.DataFrame) -> go.Figure:
 
 def build_category_mix_chart(state_master: pd.DataFrame) -> go.Figure:
     category_counts = (
-        state_master["Policy_Category"].value_counts().rename_axis("Policy_Category").reset_index(name="Count")
+        state_master["Policy_Category"]
+        .value_counts()
+        .rename_axis("Policy_Category")
+        .reset_index(name="Count")
     )
     fig = px.bar(
         category_counts,
@@ -320,8 +368,17 @@ def build_mismatch_queue_chart(pressure_mismatch: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def build_state_ratio_trend_chart(state_series: pd.DataFrame, selected_state: str) -> go.Figure:
-    ratio_series = state_series[["year_month", "demo_update_ratio", "biometric_update_ratio", "update_to_enrol_ratio"]]
+def build_state_ratio_trend_chart(
+    state_series: pd.DataFrame, selected_state: str
+) -> go.Figure:
+    ratio_series = state_series[
+        [
+            "year_month",
+            "demo_update_ratio",
+            "biometric_update_ratio",
+            "update_to_enrol_ratio",
+        ]
+    ]
     fig = px.line(
         ratio_series.melt(id_vars="year_month", var_name="Metric", value_name="Value"),
         x="year_month",

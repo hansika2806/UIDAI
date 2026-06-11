@@ -27,7 +27,7 @@ Mathematical foundations:
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -50,6 +50,7 @@ def adf_stationarity_test(series: np.ndarray) -> Dict:
     """
     try:
         from statsmodels.tsa.stattools import adfuller
+
         result = adfuller(series, autolag="AIC")
         return {
             "is_stationary": result[1] < 0.05,
@@ -59,11 +60,23 @@ def adf_stationarity_test(series: np.ndarray) -> Dict:
         }
     except ImportError:
         # statsmodels not available — assume stationary to avoid blocking
-        logger.warning("statsmodels not available; skipping ADF test (assuming stationary).")
-        return {"is_stationary": True, "adf_stat": np.nan, "p_value": np.nan, "n_lags": 0}
+        logger.warning(
+            "statsmodels not available; skipping ADF test (assuming stationary)."
+        )
+        return {
+            "is_stationary": True,
+            "adf_stat": np.nan,
+            "p_value": np.nan,
+            "n_lags": 0,
+        }
     except Exception as e:
         logger.debug(f"ADF test failed: {e}; assuming stationary.")
-        return {"is_stationary": True, "adf_stat": np.nan, "p_value": np.nan, "n_lags": 0}
+        return {
+            "is_stationary": True,
+            "adf_stat": np.nan,
+            "p_value": np.nan,
+            "n_lags": 0,
+        }
 
 
 def make_stationary(series: np.ndarray, max_diffs: int = 2) -> Tuple[np.ndarray, int]:
@@ -78,7 +91,9 @@ def make_stationary(series: np.ndarray, max_diffs: int = 2) -> Tuple[np.ndarray,
         test = adf_stationarity_test(s)
         if test["is_stationary"]:
             if d > 0:
-                logger.debug(f"Series stationary after {d} differencing(s). ADF p={test['p_value']:.4f}")
+                logger.debug(
+                    f"Series stationary after {d} differencing(s). ADF p={test['p_value']:.4f}"
+                )
             return s, d
         if d < max_diffs:
             s = np.diff(s)
@@ -109,12 +124,14 @@ def granger_causality_test(
 
     for lag in range(1, max_lag + 1):
         if T <= 2 * lag + 1:
-            results.append({
-                "lag": lag,
-                "f_statistic": np.nan,
-                "p_value": np.nan,
-                "significant": False,
-            })
+            results.append(
+                {
+                    "lag": lag,
+                    "f_statistic": np.nan,
+                    "p_value": np.nan,
+                    "significant": False,
+                }
+            )
             continue
 
         # Build lagged matrices
@@ -122,54 +139,59 @@ def granger_causality_test(
         n = len(y_target)
 
         # Restricted model: only y lags
-        X_restricted = np.column_stack([y[lag - i - 1: T - i - 1] for i in range(lag)])
+        X_restricted = np.column_stack([y[lag - i - 1 : T - i - 1] for i in range(lag)])
         X_restricted = np.column_stack([np.ones(n), X_restricted])
 
         # Unrestricted model: y lags + x lags
-        X_unrestricted = np.column_stack([
-            X_restricted,
-            *[x[lag - i - 1: T - i - 1] for i in range(lag)]
-        ])
+        X_unrestricted = np.column_stack(
+            [X_restricted, *[x[lag - i - 1 : T - i - 1] for i in range(lag)]]
+        )
 
         # OLS for restricted
         try:
             beta_r = np.linalg.lstsq(X_restricted, y_target, rcond=None)[0]
             residuals_r = y_target - X_restricted @ beta_r
-            rss_r = np.sum(residuals_r ** 2)
+            rss_r = np.sum(residuals_r**2)
 
             # OLS for unrestricted
             beta_u = np.linalg.lstsq(X_unrestricted, y_target, rcond=None)[0]
             residuals_u = y_target - X_unrestricted @ beta_u
-            rss_u = np.sum(residuals_u ** 2)
+            rss_u = np.sum(residuals_u**2)
 
             # F-statistic
             df1 = lag  # number of restrictions
             df2 = n - 2 * lag - 1
             if df2 <= 0 or rss_u < 1e-12:
-                results.append({
-                    "lag": lag,
-                    "f_statistic": np.nan,
-                    "p_value": np.nan,
-                    "significant": False,
-                })
+                results.append(
+                    {
+                        "lag": lag,
+                        "f_statistic": np.nan,
+                        "p_value": np.nan,
+                        "significant": False,
+                    }
+                )
                 continue
 
             f_stat = ((rss_r - rss_u) / df1) / (rss_u / df2)
             p_value = 1.0 - stats.f.cdf(f_stat, df1, df2)
 
-            results.append({
-                "lag": lag,
-                "f_statistic": f_stat,
-                "p_value": p_value,
-                "significant": p_value < 0.05,
-            })
+            results.append(
+                {
+                    "lag": lag,
+                    "f_statistic": f_stat,
+                    "p_value": p_value,
+                    "significant": p_value < 0.05,
+                }
+            )
         except (np.linalg.LinAlgError, ValueError):
-            results.append({
-                "lag": lag,
-                "f_statistic": np.nan,
-                "p_value": np.nan,
-                "significant": False,
-            })
+            results.append(
+                {
+                    "lag": lag,
+                    "f_statistic": np.nan,
+                    "p_value": np.nan,
+                    "significant": False,
+                }
+            )
 
     return results
 
@@ -277,14 +299,18 @@ def run_granger_analysis(
 
     Returns a dataframe with per-state, per-lag test results.
     """
-    logger.info("Running Granger causality analysis per state (with ADF stationarity checks)...")
+    logger.info(
+        "Running Granger causality analysis per state (with ADF stationarity checks)..."
+    )
     all_results = []
 
     for state in sorted(state_month["state"].unique()):
         df_s = state_month[state_month["state"] == state].sort_values("year_month")
 
         if len(df_s) < min_obs:
-            logger.debug(f"Skipping {state}: only {len(df_s)} observations (need {min_obs})")
+            logger.debug(
+                f"Skipping {state}: only {len(df_s)} observations (need {min_obs})"
+            )
             continue
 
         e_raw = df_s["E_total"].values.astype(float)
@@ -303,45 +329,57 @@ def run_granger_analysis(
         b_total = b_total[-min_len:]
 
         if min_len < min_obs:
-            logger.debug(f"Skipping {state}: too few obs after differencing ({min_len})")
+            logger.debug(
+                f"Skipping {state}: too few obs after differencing ({min_len})"
+            )
             continue
 
         # Test: E -> D
         for res in granger_causality_test(d_total, e_total, max_lag=max_lag):
-            all_results.append({
-                "state": state,
-                "cause": "Enrollment",
-                "effect": "Demographic Updates",
-                "cause_diffs": e_diffs,
-                "effect_diffs": d_diffs,
-                **res,
-            })
+            all_results.append(
+                {
+                    "state": state,
+                    "cause": "Enrollment",
+                    "effect": "Demographic Updates",
+                    "cause_diffs": e_diffs,
+                    "effect_diffs": d_diffs,
+                    **res,
+                }
+            )
 
         # Test: E -> B
         for res in granger_causality_test(b_total, e_total, max_lag=max_lag):
-            all_results.append({
-                "state": state,
-                "cause": "Enrollment",
-                "effect": "Biometric Updates",
-                "cause_diffs": e_diffs,
-                "effect_diffs": b_diffs,
-                **res,
-            })
+            all_results.append(
+                {
+                    "state": state,
+                    "cause": "Enrollment",
+                    "effect": "Biometric Updates",
+                    "cause_diffs": e_diffs,
+                    "effect_diffs": b_diffs,
+                    **res,
+                }
+            )
 
         # Test: D -> B
         for res in granger_causality_test(b_total, d_total, max_lag=max_lag):
-            all_results.append({
-                "state": state,
-                "cause": "Demographic Updates",
-                "effect": "Biometric Updates",
-                "cause_diffs": d_diffs,
-                "effect_diffs": b_diffs,
-                **res,
-            })
+            all_results.append(
+                {
+                    "state": state,
+                    "cause": "Demographic Updates",
+                    "effect": "Biometric Updates",
+                    "cause_diffs": d_diffs,
+                    "effect_diffs": b_diffs,
+                    **res,
+                }
+            )
 
     result = pd.DataFrame(all_results)
     n_sig = result["significant"].sum() if len(result) > 0 else 0
-    n_stationary = (result["cause_diffs"] == 0).sum() if len(result) > 0 and "cause_diffs" in result.columns else 0
+    n_stationary = (
+        (result["cause_diffs"] == 0).sum()
+        if len(result) > 0 and "cause_diffs" in result.columns
+        else 0
+    )
     logger.info(
         f"Granger analysis complete: {n_sig} significant causal links found. "
         f"{n_stationary}/{len(result)} tests used raw (already-stationary) series."

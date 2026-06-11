@@ -69,21 +69,33 @@ def aggregate_state_month(
     )
 
     state_month = (
-        state_month_enrol.merge(state_month_demo, on=["state", "year_month"], how="inner")
+        state_month_enrol.merge(
+            state_month_demo, on=["state", "year_month"], how="inner"
+        )
         .merge(state_month_bio, on=["state", "year_month"], how="inner")
         .sort_values(["state", "year_month"])
         .reset_index(drop=True)
     )
 
     state_month["update_to_enrol_ratio"] = (
-        (state_month["D_total"] + state_month["B_total"]) / (state_month["E_total"] + EPS)
+        state_month["D_total"] + state_month["B_total"]
+    ) / (state_month["E_total"] + EPS)
+    state_month["demo_update_ratio"] = state_month["D_total"] / (
+        state_month["E_total"] + EPS
     )
-    state_month["demo_update_ratio"] = state_month["D_total"] / (state_month["E_total"] + EPS)
-    state_month["biometric_update_ratio"] = state_month["B_total"] / (state_month["E_total"] + EPS)
+    state_month["biometric_update_ratio"] = state_month["B_total"] / (
+        state_month["E_total"] + EPS
+    )
     state_month["E_child_share"] = state_month["E_0_5"] / (state_month["E_total"] + EPS)
-    state_month["E_minor_share"] = state_month["E_5_17"] / (state_month["E_total"] + EPS)
-    state_month["D_adult_share"] = state_month["D_17_plus"] / (state_month["D_total"] + EPS)
-    state_month["B_adult_share"] = state_month["B_17_plus"] / (state_month["B_total"] + EPS)
+    state_month["E_minor_share"] = state_month["E_5_17"] / (
+        state_month["E_total"] + EPS
+    )
+    state_month["D_adult_share"] = state_month["D_17_plus"] / (
+        state_month["D_total"] + EPS
+    )
+    state_month["B_adult_share"] = state_month["B_17_plus"] / (
+        state_month["B_total"] + EPS
+    )
     state_month["Total_Activity"] = (
         state_month["E_total"] + state_month["D_total"] + state_month["B_total"]
     )
@@ -100,7 +112,9 @@ def compute_activity_correlation_matrix(state_month: pd.DataFrame) -> pd.DataFra
         "D_adult_share",
         "B_adult_share",
     ]
-    return state_month[corr_cols].corr().reset_index().rename(columns={"index": "metric"})
+    return (
+        state_month[corr_cols].corr().reset_index().rename(columns={"index": "metric"})
+    )
 
 
 def compute_state_stability(state_month: pd.DataFrame) -> pd.DataFrame:
@@ -116,15 +130,23 @@ def compute_state_stability(state_month: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def compute_rank_persistence(state_month: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, float]]:
+def compute_rank_persistence(
+    state_month: pd.DataFrame,
+) -> Tuple[pd.DataFrame, Dict[str, float]]:
     state_totals = state_month.groupby("state", as_index=False).agg(
         E_total=("E_total", "sum"),
         D_total=("D_total", "sum"),
         B_total=("B_total", "sum"),
     )
-    state_totals["E_rank"] = state_totals["E_total"].rank(ascending=False, method="average")
-    state_totals["D_rank"] = state_totals["D_total"].rank(ascending=False, method="average")
-    state_totals["B_rank"] = state_totals["B_total"].rank(ascending=False, method="average")
+    state_totals["E_rank"] = state_totals["E_total"].rank(
+        ascending=False, method="average"
+    )
+    state_totals["D_rank"] = state_totals["D_total"].rank(
+        ascending=False, method="average"
+    )
+    state_totals["B_rank"] = state_totals["B_total"].rank(
+        ascending=False, method="average"
+    )
     rank_corr = {
         "rho_enrolment_demographic": state_totals["E_rank"].corr(
             state_totals["D_rank"], method="spearman"
@@ -141,7 +163,9 @@ def compute_lag_features(state_month: pd.DataFrame) -> pd.DataFrame:
     for state in sorted(state_month["state"].unique()):
         df_state = state_month[state_month["state"] == state].sort_values("year_month")
         if len(df_state) < 3:
-            lag_results.append({"state": state, "lag1_corr": np.nan, "lag2_corr": np.nan})
+            lag_results.append(
+                {"state": state, "lag1_corr": np.nan, "lag2_corr": np.nan}
+            )
             continue
 
         lag1_corr = df_state["E_5_17"].corr(df_state["B_17_plus"].shift(-1))
@@ -216,9 +240,15 @@ def compute_state_indicators(
     )
     state_master["log_activity"] = np.log1p(state_master["Total_Activity"])
 
-    state_master["E_rank"] = state_master["E_total"].rank(ascending=False, method="average")
-    state_master["D_rank"] = state_master["D_total"].rank(ascending=False, method="average")
-    state_master["B_rank"] = state_master["B_total"].rank(ascending=False, method="average")
+    state_master["E_rank"] = state_master["E_total"].rank(
+        ascending=False, method="average"
+    )
+    state_master["D_rank"] = state_master["D_total"].rank(
+        ascending=False, method="average"
+    )
+    state_master["B_rank"] = state_master["B_total"].rank(
+        ascending=False, method="average"
+    )
     state_master["AMI_raw"] = (
         state_master["E_rank"] + state_master["D_rank"] + state_master["B_rank"]
     )
@@ -268,12 +298,16 @@ def compute_national_monthly_summary(state_month: pd.DataFrame) -> pd.DataFrame:
         .sort_values("year_month")
         .reset_index(drop=True)
     )
-    national["Total_Activity"] = national["E_total"] + national["D_total"] + national["B_total"]
+    national["Total_Activity"] = (
+        national["E_total"] + national["D_total"] + national["B_total"]
+    )
     return national
 
 
 def compute_pareto_activity(state_master: pd.DataFrame) -> pd.DataFrame:
-    pareto = state_master.sort_values("Total_Activity", ascending=False).reset_index(drop=True)
+    pareto = state_master.sort_values("Total_Activity", ascending=False).reset_index(
+        drop=True
+    )
     pareto["activity_rank"] = np.arange(1, len(pareto) + 1)
     pareto["cum_share"] = pareto["Total_Activity"].cumsum() / (
         pareto["Total_Activity"].sum() + EPS
@@ -290,24 +324,29 @@ def compute_anomalies(state_master: pd.DataFrame) -> pd.DataFrame:
     upper_bound = q3 + 1.5 * iqr
     df["Anomaly_High_Stress"] = df["VSI"] > upper_bound
 
-    df["Anomaly_Pressure_Mismatch"] = (
-        (df["UPI"] > df["UPI"].quantile(0.75)) & (df["AMI"] < df["AMI"].quantile(0.25))
+    df["Anomaly_Pressure_Mismatch"] = (df["UPI"] > df["UPI"].quantile(0.75)) & (
+        df["AMI"] < df["AMI"].quantile(0.25)
     )
 
     df["Expected_VSI"] = df["log_activity"].rank(pct=True)
     df["Volatility_Excess"] = df["VSI"] - df["Expected_VSI"]
-    df["Anomaly_Scale_Volatility"] = df["Volatility_Excess"] > df["Volatility_Excess"].quantile(0.9)
+    df["Anomaly_Scale_Volatility"] = df["Volatility_Excess"] > df[
+        "Volatility_Excess"
+    ].quantile(0.9)
 
     ami_med = df["AMI"].median()
     upi_med = df["UPI"].median()
-    df["Governance_Distance"] = np.sqrt((df["AMI"] - ami_med) ** 2 + (df["UPI"] - upi_med) ** 2)
-    df["Anomaly_Governance_Outlier"] = (
-        df["Governance_Distance"] > df["Governance_Distance"].quantile(0.9)
+    df["Governance_Distance"] = np.sqrt(
+        (df["AMI"] - ami_med) ** 2 + (df["UPI"] - upi_med) ** 2
     )
+    df["Anomaly_Governance_Outlier"] = df["Governance_Distance"] > df[
+        "Governance_Distance"
+    ].quantile(0.9)
 
     # Robust Anomaly Detection integration
     try:
         from anomaly import run_advanced_anomaly_detection
+
         advanced_res = run_advanced_anomaly_detection(df)
         df_advanced = advanced_res["state_master_anomalies"]
         df["IF_Anomaly_Score"] = df_advanced["IF_Anomaly_Score"]
@@ -315,7 +354,7 @@ def compute_anomalies(state_master: pd.DataFrame) -> pd.DataFrame:
         df["Ensemble_Anomaly_Score"] = df_advanced["Ensemble_Anomaly_Score"]
         df["Ensemble_Anomaly"] = df_advanced["Ensemble_Anomaly"]
         df["Anomaly_Severity_Rank"] = df_advanced["Anomaly_Severity_Rank"]
-    except Exception as e:
+    except Exception:
         df["IF_Anomaly_Score"] = 0.0
         df["ECOD_Anomaly_Score"] = 0.0
         df["Ensemble_Anomaly_Score"] = 0.0
@@ -335,7 +374,9 @@ def compute_anomalies(state_master: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
 
-def compute_state_focus_summary(state_master: pd.DataFrame, anomalies: pd.DataFrame) -> pd.DataFrame:
+def compute_state_focus_summary(
+    state_master: pd.DataFrame, anomalies: pd.DataFrame
+) -> pd.DataFrame:
     summary = state_master.merge(
         anomalies[
             [
@@ -370,7 +411,9 @@ def build_analysis_outputs(
     enrolment_ready, demographic_ready, biometric_ready = prepare_analysis_frames(
         enrolment, demographic, biometric
     )
-    state_month = aggregate_state_month(enrolment_ready, demographic_ready, biometric_ready)
+    state_month = aggregate_state_month(
+        enrolment_ready, demographic_ready, biometric_ready
+    )
     state_stability = compute_state_stability(state_month)
     lag_df = compute_lag_features(state_month)
     rank_persistence, rank_corr = compute_rank_persistence(state_month)
@@ -383,10 +426,7 @@ def build_analysis_outputs(
     indicator_corr = compute_indicator_correlation_matrix(state_master)
 
     rank_corr_df = pd.DataFrame(
-        [
-            {"metric": key, "value": value}
-            for key, value in rank_corr.items()
-        ]
+        [{"metric": key, "value": value} for key, value in rank_corr.items()]
     )
 
     return {

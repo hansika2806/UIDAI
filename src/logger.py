@@ -18,11 +18,11 @@ from pythonjsonlogger import jsonlogger
 
 class ContextFilter(logging.Filter):
     """Add contextual information to log records."""
-    
+
     def __init__(self, context: Optional[Dict[str, Any]] = None):
         super().__init__()
         self.context = context or {}
-    
+
     def filter(self, record: logging.LogRecord) -> bool:
         """Add context to the log record."""
         for key, value in self.context.items():
@@ -32,20 +32,20 @@ class ContextFilter(logging.Filter):
 
 class PerformanceLogger:
     """Track and log performance metrics."""
-    
+
     def __init__(self, logger: logging.Logger):
         self.logger = logger
         self.timers: Dict[str, float] = {}
-    
+
     @contextmanager
     def timer(self, operation: str, **context):
         """Context manager for timing operations."""
         start_time = time.time()
         self.logger.info(
             f"Starting {operation}",
-            extra={"operation": operation, "event": "start", **context}
+            extra={"operation": operation, "event": "start", **context},
         )
-        
+
         try:
             yield
         except Exception as e:
@@ -57,9 +57,9 @@ class PerformanceLogger:
                     "event": "error",
                     "duration_seconds": duration,
                     "error": str(e),
-                    **context
+                    **context,
                 },
-                exc_info=True
+                exc_info=True,
             )
             raise
         else:
@@ -70,8 +70,8 @@ class PerformanceLogger:
                     "operation": operation,
                     "event": "complete",
                     "duration_seconds": duration,
-                    **context
-                }
+                    **context,
+                },
             )
 
 
@@ -80,60 +80,60 @@ def setup_logger(
     level: str = "INFO",
     log_format: str = "json",
     log_file: Optional[Path] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
 ) -> logging.Logger:
     """
     Setup a structured logger with JSON formatting.
-    
+
     Args:
         name: Logger name (typically __name__)
         level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Format type ('json' or 'text')
         log_file: Optional file path for logging
         context: Optional context dictionary to add to all logs
-    
+
     Returns:
         Configured logger instance
     """
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level.upper()))
-    
+
     # Remove existing handlers
     logger.handlers.clear()
-    
+
     # Create formatter
     if log_format == "json":
         formatter = jsonlogger.JsonFormatter(
-            fmt='%(asctime)s %(name)s %(levelname)s %(message)s',
+            fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
             rename_fields={
-                'asctime': 'timestamp',
-                'levelname': 'level',
-                'name': 'logger'
-            }
+                "asctime": "timestamp",
+                "levelname": "level",
+                "name": "logger",
+            },
         )
     else:
         formatter = logging.Formatter(
-            fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
+            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
-    
+
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    
+
     # File handler (if specified)
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-    
+
     # Add context filter
     if context:
         context_filter = ContextFilter(context)
         logger.addFilter(context_filter)
-    
+
     return logger
 
 
@@ -142,29 +142,30 @@ def get_logger(
     level: Optional[str] = None,
     log_format: Optional[str] = None,
     log_file: Optional[Path] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
 ) -> logging.Logger:
     """
     Get or create a logger with optional configuration.
-    
+
     If logger already exists, returns it. Otherwise creates a new one.
     """
     logger = logging.getLogger(name)
-    
+
     # If logger has no handlers, set it up
     if not logger.handlers:
         # Try to import config, fall back to defaults
         try:
             from config_manager import config
+
             level = level or config.logging.level
             log_format = log_format or config.logging.format
             log_file = log_file or config.logging.log_file
         except ImportError:
             level = level or "INFO"
             log_format = log_format or "json"
-        
+
         logger = setup_logger(name, level, log_format, log_file, context)
-    
+
     return logger
 
 
@@ -177,8 +178,8 @@ def log_dataframe_info(logger: logging.Logger, df, name: str = "DataFrame"):
             "shape": df.shape,
             "columns": list(df.columns),
             "memory_mb": df.memory_usage(deep=True).sum() / 1024 / 1024,
-            "null_counts": df.isnull().sum().to_dict()
-        }
+            "null_counts": df.isnull().sum().to_dict(),
+        },
     )
 
 
@@ -191,12 +192,14 @@ def log_pipeline_start(logger: logging.Logger, pipeline_name: str, **kwargs):
             "pipeline": pipeline_name,
             "event": "pipeline_start",
             "timestamp": datetime.utcnow().isoformat(),
-            **kwargs
-        }
+            **kwargs,
+        },
     )
 
 
-def log_pipeline_end(logger: logging.Logger, pipeline_name: str, success: bool = True, **kwargs):
+def log_pipeline_end(
+    logger: logging.Logger, pipeline_name: str, success: bool = True, **kwargs
+):
     """Log the end of a data pipeline."""
     logger.info(
         f"Pipeline {'completed' if success else 'failed'}: {pipeline_name}",
@@ -205,12 +208,14 @@ def log_pipeline_end(logger: logging.Logger, pipeline_name: str, success: bool =
             "event": "pipeline_end",
             "success": success,
             "timestamp": datetime.utcnow().isoformat(),
-            **kwargs
-        }
+            **kwargs,
+        },
     )
 
 
-def log_model_metrics(logger: logging.Logger, model_name: str, metrics: Dict[str, float]):
+def log_model_metrics(
+    logger: logging.Logger, model_name: str, metrics: Dict[str, float]
+):
     """Log model performance metrics."""
     logger.info(
         f"Model metrics: {model_name}",
@@ -218,8 +223,9 @@ def log_model_metrics(logger: logging.Logger, model_name: str, metrics: Dict[str
             "model": model_name,
             "event": "model_metrics",
             "metrics": metrics,
-            "timestamp": datetime.utcnow().isoformat()
-        }
+            "timestamp": datetime.utcnow().isoformat(),
+        },
     )
+
 
 # Made with Bob

@@ -30,12 +30,22 @@ def metric_card(label: str, value: str, note: str) -> None:
     )
 
 
-def render_kpis(state_master: pd.DataFrame, state_month: pd.DataFrame, anomalies: pd.DataFrame) -> None:
+def render_kpis(
+    state_master: pd.DataFrame, state_month: pd.DataFrame, anomalies: pd.DataFrame
+) -> None:
     kpi_cols = st.columns(5)
     with kpi_cols[0]:
-        metric_card("States in Scope", str(state_master["state"].nunique()), "Filtered analytical universe")
+        metric_card(
+            "States in Scope",
+            str(state_master["state"].nunique()),
+            "Filtered analytical universe",
+        )
     with kpi_cols[1]:
-        metric_card("Months Covered", str(state_month["year_month"].nunique()), "Active state-month observations")
+        metric_card(
+            "Months Covered",
+            str(state_month["year_month"].nunique()),
+            "Active state-month observations",
+        )
     with kpi_cols[2]:
         metric_card(
             "Total Activity",

@@ -19,7 +19,7 @@ Mathematical foundation:
 
 import logging
 import warnings
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -73,7 +73,7 @@ def walk_forward_backtest(
             - 'predicted'  : Model predictions for test window
     """
     n = len(series)
-    
+
     # Dynamic parameter scaling for short time series
     if n < min_train + test_size:
         if n >= 7:
@@ -85,9 +85,13 @@ def walk_forward_backtest(
 
     if n < min_train + test_size:
         return {
-            "mape": np.nan, "rmse": np.nan, "mae": np.nan,
-            "n_train": 0, "n_test": 0,
-            "actual": np.array([]), "predicted": np.array([]),
+            "mape": np.nan,
+            "rmse": np.nan,
+            "mae": np.nan,
+            "n_train": 0,
+            "n_test": 0,
+            "actual": np.array([]),
+            "predicted": np.array([]),
         }
 
     train = series[:-test_size]
@@ -96,9 +100,13 @@ def walk_forward_backtest(
     result = forecast_state(train, horizon=test_size)
     if result is None:
         return {
-            "mape": np.nan, "rmse": np.nan, "mae": np.nan,
-            "n_train": len(train), "n_test": test_size,
-            "actual": test, "predicted": np.array([]),
+            "mape": np.nan,
+            "rmse": np.nan,
+            "mae": np.nan,
+            "n_train": len(train),
+            "n_test": test_size,
+            "actual": test,
+            "predicted": np.array([]),
         }
 
     forecast_vals = result["forecast_mean"]
@@ -125,6 +133,7 @@ def _fit_sarima_with_order(
     """Attempt to fit a SARIMA model with given orders. Returns None on failure."""
     try:
         from statsmodels.tsa.statespace.sarimax import SARIMAX
+
         model = SARIMAX(
             series,
             order=order,
@@ -176,12 +185,12 @@ def auto_sarima(
 
 def _manual_fallback_forecast(state_series: np.ndarray, horizon: int = 12) -> Dict:
     """Manually generate a linear trend forecast with standard error-based confidence intervals.
-    
+
     Used when statistical time series packages fail to converge due to small sample size.
     """
     n = len(state_series)
     t = np.arange(n)
-    
+
     # Fit simple linear regression: y = slope * t + intercept
     if n >= 2:
         try:
@@ -192,25 +201,29 @@ def _manual_fallback_forecast(state_series: np.ndarray, horizon: int = 12) -> Di
     else:
         slope = 0.0
         intercept = float(state_series[0]) if n > 0 else 0.0
-        
+
     future_t = np.arange(n, n + horizon)
     forecast_mean = slope * future_t + intercept
-    
+
     # Clip negative values
     forecast_mean = np.maximum(0.0, forecast_mean)
-    
+
     # Estimate standard error
-    std_err = np.std(state_series) if n > 1 else (0.1 * float(state_series[0]) if n > 0 else 1.0)
+    std_err = (
+        np.std(state_series)
+        if n > 1
+        else (0.1 * float(state_series[0]) if n > 0 else 1.0)
+    )
     if std_err < 1e-12:
         std_err = 1.0
-        
+
     # Standard normal multipliers: 80% CI => 1.282, 95% CI => 1.960
     # Increase uncertainty over time (sqrt(step) expansion)
     expansion = np.sqrt(np.arange(1, horizon + 1))
-    
+
     ci_80_half = 1.282 * std_err * expansion
     ci_95_half = 1.960 * std_err * expansion
-    
+
     return {
         "forecast_mean": forecast_mean,
         "ci_80_lower": np.maximum(0.0, forecast_mean - ci_80_half),
@@ -326,20 +339,24 @@ def run_demand_forecasting(
         df_s = state_month[state_month["state"] == state].sort_values("year_month")
 
         if len(df_s) < min_obs:
-            logger.debug(f"Skipping {state}: only {len(df_s)} observations (need {min_obs})")
-            model_rows.append({
-                "state": state,
-                "n_obs": len(df_s),
-                "model_fitted": False,
-                "aic": np.nan,
-                "order": None,
-                "seasonal_order": None,
-                "capacity_threshold": np.nan,
-                "months_to_breach": -1,
-                "backtest_mape": np.nan,
-                "backtest_rmse": np.nan,
-                "backtest_mae": np.nan,
-            })
+            logger.debug(
+                f"Skipping {state}: only {len(df_s)} observations (need {min_obs})"
+            )
+            model_rows.append(
+                {
+                    "state": state,
+                    "n_obs": len(df_s),
+                    "model_fitted": False,
+                    "aic": np.nan,
+                    "order": None,
+                    "seasonal_order": None,
+                    "capacity_threshold": np.nan,
+                    "months_to_breach": -1,
+                    "backtest_mape": np.nan,
+                    "backtest_rmse": np.nan,
+                    "backtest_mae": np.nan,
+                }
+            )
             continue
 
         series = df_s[target_col].values.astype(float)
@@ -355,19 +372,21 @@ def run_demand_forecasting(
         result = forecast_state(series, horizon=horizon)
 
         if result is None:
-            model_rows.append({
-                "state": state,
-                "n_obs": len(series),
-                "model_fitted": False,
-                "aic": np.nan,
-                "order": None,
-                "seasonal_order": None,
-                "capacity_threshold": np.nan,
-                "months_to_breach": -1,
-                "backtest_mape": bt_metrics["mape"],
-                "backtest_rmse": bt_metrics["rmse"],
-                "backtest_mae": bt_metrics["mae"],
-            })
+            model_rows.append(
+                {
+                    "state": state,
+                    "n_obs": len(series),
+                    "model_fitted": False,
+                    "aic": np.nan,
+                    "order": None,
+                    "seasonal_order": None,
+                    "capacity_threshold": np.nan,
+                    "months_to_breach": -1,
+                    "backtest_mape": bt_metrics["mape"],
+                    "backtest_rmse": bt_metrics["rmse"],
+                    "backtest_mae": bt_metrics["mae"],
+                }
+            )
             continue
 
         # Define capacity threshold as 1.25 * max historical update volume
@@ -380,40 +399,52 @@ def run_demand_forecasting(
                 months_to_breach = j + 1
                 break
 
-        model_rows.append({
-            "state": state,
-            "n_obs": len(series),
-            "model_fitted": True,
-            "aic": result["aic"],
-            "order": str(result["order"]),
-            "seasonal_order": str(result["seasonal_order"]),
-            "capacity_threshold": float(capacity_threshold),
-            "months_to_breach": int(months_to_breach) if months_to_breach is not None else -1,
-            "backtest_mape": bt_metrics["mape"],
-            "backtest_rmse": bt_metrics["rmse"],
-            "backtest_mae": bt_metrics["mae"],
-        })
+        model_rows.append(
+            {
+                "state": state,
+                "n_obs": len(series),
+                "model_fitted": True,
+                "aic": result["aic"],
+                "order": str(result["order"]),
+                "seasonal_order": str(result["seasonal_order"]),
+                "capacity_threshold": float(capacity_threshold),
+                "months_to_breach": (
+                    int(months_to_breach) if months_to_breach is not None else -1
+                ),
+                "backtest_mape": bt_metrics["mape"],
+                "backtest_rmse": bt_metrics["rmse"],
+                "backtest_mae": bt_metrics["mae"],
+            }
+        )
 
         # Generate future month labels
         try:
             last_period = pd.Period(last_month, freq="M")
-            future_months = [(last_period + i + 1).strftime("%Y-%m") for i in range(horizon)]
+            future_months = [
+                (last_period + i + 1).strftime("%Y-%m") for i in range(horizon)
+            ]
         except Exception:
             future_months = [f"t+{i+1}" for i in range(horizon)]
 
         state_forecasts[state] = result
 
         for j in range(horizon):
-            forecast_rows.append({
-                "state": state,
-                "forecast_month": future_months[j],
-                "forecast_step": j + 1,
-                "forecast_mean": float(result["forecast_mean"].iloc[j] if hasattr(result["forecast_mean"], "iloc") else result["forecast_mean"][j]),
-                "ci_80_lower": float(result["ci_80_lower"][j]),
-                "ci_80_upper": float(result["ci_80_upper"][j]),
-                "ci_95_lower": float(result["ci_95_lower"][j]),
-                "ci_95_upper": float(result["ci_95_upper"][j]),
-            })
+            forecast_rows.append(
+                {
+                    "state": state,
+                    "forecast_month": future_months[j],
+                    "forecast_step": j + 1,
+                    "forecast_mean": float(
+                        result["forecast_mean"].iloc[j]
+                        if hasattr(result["forecast_mean"], "iloc")
+                        else result["forecast_mean"][j]
+                    ),
+                    "ci_80_lower": float(result["ci_80_lower"][j]),
+                    "ci_80_upper": float(result["ci_80_upper"][j]),
+                    "ci_95_lower": float(result["ci_95_lower"][j]),
+                    "ci_95_upper": float(result["ci_95_upper"][j]),
+                }
+            )
 
         if (i + 1) % 10 == 0:
             logger.info(f"  Forecasted {i + 1}/{len(states)} states...")

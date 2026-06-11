@@ -6,7 +6,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-ANALYSIS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "analysis")
+ANALYSIS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "analysis",
+)
 
 
 def _load_clustered_data():
@@ -37,7 +41,9 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
 
     # Coerce size column to plain list to prevent narwhals.Series crash in plotly
     plot_df = clustered.copy()
-    plot_df["Mahalanobis_Distance"] = plot_df["Mahalanobis_Distance"].astype(float).tolist()
+    plot_df["Mahalanobis_Distance"] = (
+        plot_df["Mahalanobis_Distance"].astype(float).tolist()
+    )
 
     fig = px.scatter(
         plot_df,
@@ -61,29 +67,45 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
 def build_bic_chart(bic_df: pd.DataFrame) -> go.Figure:
     """BIC/AIC/AICc model selection chart."""
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=bic_df["K"], y=bic_df["BIC"],
-        mode="lines+markers", name="BIC",
-        line=dict(color="#102a43", width=3),
-    ))
-    fig.add_trace(go.Scatter(
-        x=bic_df["K"], y=bic_df["AIC"],
-        mode="lines+markers", name="AIC",
-        line=dict(color="#0e7490", width=2, dash="dash"),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=bic_df["K"],
+            y=bic_df["BIC"],
+            mode="lines+markers",
+            name="BIC",
+            line=dict(color="#102a43", width=3),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=bic_df["K"],
+            y=bic_df["AIC"],
+            mode="lines+markers",
+            name="AIC",
+            line=dict(color="#0e7490", width=2, dash="dash"),
+        )
+    )
 
     if "AICc" in bic_df.columns:
-        fig.add_trace(go.Scatter(
-            x=bic_df["K"], y=bic_df["AICc"],
-            mode="lines+markers", name="AICc (Selected)",
-            line=dict(color="#d97706", width=2.5, dash="dashdot"),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=bic_df["K"],
+                y=bic_df["AICc"],
+                mode="lines+markers",
+                name="AICc (Selected)",
+                line=dict(color="#d97706", width=2.5, dash="dashdot"),
+            )
+        )
         optimal_k = int(bic_df.loc[bic_df["AICc"].idxmin(), "K"])
     else:
         optimal_k = int(bic_df.loc[bic_df["BIC"].idxmin(), "K"])
 
-    fig.add_vline(x=optimal_k, line_dash="dot", line_color="#ea580c",
-                  annotation_text=f"Optimal K={optimal_k}")
+    fig.add_vline(
+        x=optimal_k,
+        line_dash="dot",
+        line_color="#ea580c",
+        annotation_text=f"Optimal K={optimal_k}",
+    )
 
     fig.update_layout(
         title="GMM Model Selection: BIC, AIC, and AICc vs K",
@@ -118,8 +140,8 @@ def render_cluster_panel() -> None:
     st.subheader("🔬 Unsupervised Governance Clustering (GMM)")
     st.markdown(
         '<div class="panel-note"><strong>Gaussian Mixture Model</strong> with BIC-selected K replaces '
-        'hard-threshold classification. Each state receives a <em>soft</em> cluster membership probability '
-        'and a <strong>Mahalanobis distance</strong> anomaly score from its cluster centroid.</div>',
+        "hard-threshold classification. Each state receives a <em>soft</em> cluster membership probability "
+        "and a <strong>Mahalanobis distance</strong> anomaly score from its cluster centroid.</div>",
         unsafe_allow_html=True,
     )
 
@@ -128,7 +150,9 @@ def render_cluster_panel() -> None:
     centroids = _load_centroids()
 
     if clustered is None:
-        st.warning("Clustering data not available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "Clustering data not available. Run the advanced analytics pipeline first."
+        )
         return
 
     # Label anchoring info (Fix 2)
@@ -161,9 +185,15 @@ def render_cluster_panel() -> None:
     prob_cols = [c for c in clustered.columns if c.startswith("GMM_Prob_")]
     if prob_cols:
         st.markdown("**Soft Cluster Membership Probabilities**")
-        display_cols = ["state", "GMM_Governance_Label", "Mahalanobis_Distance"] + prob_cols
+        display_cols = [
+            "state",
+            "GMM_Governance_Label",
+            "Mahalanobis_Distance",
+        ] + prob_cols
         st.dataframe(
-            clustered[display_cols].sort_values("Mahalanobis_Distance", ascending=False),
+            clustered[display_cols].sort_values(
+                "Mahalanobis_Distance", ascending=False
+            ),
             use_container_width=True,
             hide_index=True,
         )
