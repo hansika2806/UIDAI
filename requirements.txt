@@ -1,5 +1,5 @@
 # Core Data Science & ML
-pandas==3.0.2
+pandas==2.2.3
 numpy==2.4.4
 scipy==1.17.1
 scikit-learn==1.6.1
@@ -38,8 +38,8 @@ ruff==0.11.0
 
 # MLOps & Experiment Tracking
 mlflow==2.19.0
-great-expectations==1.4.0
-pandera==0.20.4
+great-expectations==1.18.1
+pandera==0.31.1
 
 # Configuration Management
 pydantic==2.13.3
@@ -50,5 +50,5 @@ python-dotenv==1.2.2
 python-json-logger==4.1.0
 
 # Type Stubs
-pandas-stubs==2.2.3.250101
-types-requests==2.32.0.20250102
+pandas-stubs==2.2.3.250527
+types-requests==2.32.0.20250602
