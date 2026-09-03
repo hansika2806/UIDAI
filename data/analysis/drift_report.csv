@@ -1,0 +1,5 @@
+feature,check_type,ks_stat,p_value,drift_detected,severity,psi
+AMI,KS_covariate,0.4444444444444444,0.0014103512403408932,True,critical,
+UPI,KS_covariate,0.027777777777777776,1.0,False,stable,
+VSI,KS_covariate,0.027777777777777776,1.0,False,stable,
+TPS,KS_covariate,0.027777777777777776,1.0,False,stable,

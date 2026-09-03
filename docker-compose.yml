@@ -15,6 +15,7 @@ services:
       - ./src:/app/src
       - ./dashboard:/app/dashboard
     environment:
+      - PORT=8501
       - PYTHONPATH=/app
       - STREAMLIT_SERVER_PORT=8501
       - STREAMLIT_SERVER_ADDRESS=0.0.0.0

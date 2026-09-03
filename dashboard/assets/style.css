@@ -1,79 +1,592 @@
-/* UIDAI Intelligence Studio - Custom Styling */
+/* ═══════════════════════════════════════════════════════════════════
+   UIDAI Intelligence Studio — Premium Design System & Interaction
+   Typography: Inter 400 / 500 only
+   Palette:  ocean-slate (#102a43) + teal (#0e7490) + amber (#d97706)
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* Global App Styling */
-.stApp {
-    background:
-        radial-gradient(circle at top right, rgba(14,116,144,0.12), transparent 28%),
-        radial-gradient(circle at top left, rgba(245,158,11,0.10), transparent 24%),
-        linear-gradient(180deg, #f8fafc 0%, #eef4f7 100%);
+/* ── Token Layer ─────────────────────────────────────────────────────────── */
+:root {
+  --font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --weight-normal: 400;
+  --weight-medium: 500;
+
+  --clr-deep:    #0f172a;
+  --clr-teal:    #0e7490;
+  --clr-teal-lt: rgba(14, 116, 144, 0.06);
+  --clr-amber:   #d97706;
+  --clr-green:   #16a34a;
+  --clr-red:     #dc2626;
+  --clr-slate:   #334155;
+  --clr-muted:   #64748b;
+  --clr-border:  rgba(148, 163, 184, 0.18);
+  --clr-bg:      #f8fafc;
+  --clr-surface: rgba(255, 255, 255, 0.85);
+
+  --radius-md:   16px;
+  --radius-lg:   24px;
+  --radius-pill: 9999px;
+
+  --shadow-sm:   0 4px 12px rgba(15, 23, 42, 0.03);
+  --shadow-md:   0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow-lg:   0 20px 50px rgba(15, 23, 42, 0.10);
+
+  --gap-sm:      1rem;
+  --gap-md:      2rem;
+  --gap-lg:      2.5rem;
 }
 
-.block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
+/* ── Base Reset & Animations ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Typography */
-h1, h2, h3 {
-    font-family: "Aptos Display", "Trebuchet MS", sans-serif;
-    letter-spacing: -0.02em;
-    color: #102a43;
+@keyframes pulse-teal {
+  0% { box-shadow: 0 0 0 0 rgba(14, 116, 144, 0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(14, 116, 144, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(14, 116, 144, 0); }
 }
 
-p, div, span, label {
-    font-family: "Aptos", "Segoe UI", sans-serif;
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.25); }
+  70%  { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
 
-/* Hero Section */
+@keyframes pulse-warning-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.25); }
+  70%  { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+}
+
+@keyframes value-pulse {
+  0% { transform: scale(1); opacity: 0.75; }
+  50% { transform: scale(1.03); opacity: 1; filter: brightness(1.15); }
+  100% { transform: scale(1); }
+}
+
+html, body, [data-testid="stApp"] {
+  font-family: var(--font);
+  font-weight: var(--weight-normal);
+  color: var(--clr-slate);
+  background: var(--clr-bg);
+  scroll-behavior: smooth;
+}
+
+/* Staggered load effect on main containers */
+[data-testid="column"], .metric-card, [data-testid="stPlotlyChart"], [data-testid="stExpander"], .alert-banner {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Delay for second rows */
+[data-testid="column"]:nth-child(even) {
+  animation-delay: 0.08s;
+}
+
+/* ── Sidebar (Control Deck aesthetic) ───────────────────────────────────────── */
+[data-testid="stSidebar"] {
+  background: radial-gradient(circle at top, #0f172a 0%, #020617 100%) !important;
+  border-right: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+[data-testid="stSidebar"] * {
+  font-family: var(--font) !important;
+  color: #94a3b8 !important;
+}
+
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stMultiSelect label,
+[data-testid="stSidebar"] .stDateInput label {
+  font-size: 0.75rem !important;
+  font-weight: var(--weight-medium) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b !important;
+  margin-bottom: 0.4rem !important;
+}
+
+[data-testid="stSidebar"] .stSelectbox > div > div,
+[data-testid="stSidebar"] .stMultiSelect > div > div,
+[data-testid="stSidebar"] input {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+  color: #f8fafc !important;
+  transition: border-color 0.25s, box-shadow 0.25s !important;
+}
+
+[data-testid="stSidebar"] .stSelectbox > div > div:hover,
+[data-testid="stSidebar"] .stMultiSelect > div > div:hover {
+  border-color: rgba(14, 116, 144, 0.6) !important;
+  box-shadow: 0 0 10px rgba(14, 116, 144, 0.25) !important;
+}
+
+/* ── Hero Banner (Premium visual centerpiece) ───────────────────────────────── */
 .hero {
-    padding: 1.35rem 1.5rem;
-    border-radius: 22px;
-    background: linear-gradient(135deg, rgba(16,42,67,0.96), rgba(14,116,144,0.90));
-    color: white;
-    box-shadow: 0 18px 45px rgba(16,42,67,0.18);
-    margin-bottom: 1rem;
+  background: linear-gradient(135deg, #020617 0%, #0f172a 35%, #0e7490 85%, #0891b2 100%);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2.5rem;
+  margin-bottom: var(--gap-md);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: 1.85rem !important;
+  font-weight: var(--weight-medium) !important;
+  color: #ffffff !important;
+  margin: 0 0 0.4rem 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .hero p {
-    color: rgba(255,255,255,0.82);
-    margin-bottom: 0;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.75);
+  margin: 0;
 }
 
-/* Metric Cards */
+/* ── Alert Banner ─────────────────────────────────────────────────────────── */
+.alert-banner {
+  background: linear-gradient(135deg, rgba(220,38,38,0.04) 0%, rgba(220,38,38,0.01) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  border-left: 5px solid #dc2626;
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.5rem;
+  margin: 0 0 var(--gap-md) 0;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+}
+
+.alert-banner-title {
+  font-size: 0.88rem;
+  font-weight: var(--weight-medium);
+  color: #b91c1c;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.alert-banner-item {
+  font-size: 0.86rem;
+  color: #450a0a;
+  line-height: 1.7;
+  margin: 0.2rem 0;
+}
+
+/* ── Tabs (Modern fluid transition) ────────────────────────────────────────── */
+[data-testid="stTabs"] > div:first-child {
+  border-bottom: 2px solid var(--clr-border);
+  margin-bottom: var(--gap-md);
+}
+
+[data-testid="stTabs"] button {
+  font-family: var(--font) !important;
+  font-size: 0.88rem !important;
+  font-weight: var(--weight-medium) !important;
+  color: var(--clr-muted) !important;
+  padding: 0.75rem 1.4rem !important;
+  border-radius: 8px 8px 0 0 !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: transparent !important;
+  border-bottom: 3px solid transparent !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+  color: var(--clr-teal) !important;
+  border-bottom: 3px solid var(--clr-teal) !important;
+  background: rgba(14, 116, 144, 0.04) !important;
+}
+
+[data-testid="stTabs"] button:hover {
+  color: var(--clr-deep) !important;
+  background: rgba(148, 163, 184, 0.05) !important;
+}
+
+/* ── Headline ────────────────────────────────────────────────────────────── */
+.headline {
+  font-size: 1.35rem;
+  font-weight: var(--weight-medium);
+  color: var(--clr-deep);
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+}
+
+/* ── Glassmorphic Metric Cards ───────────────────────────────────────────── */
 .metric-card {
-    background: rgba(255,255,255,0.88);
-    border: 1px solid rgba(148,163,184,0.18);
-    border-radius: 18px;
-    padding: 1rem 1.1rem;
-    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+  background: var(--clr-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.60);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: auto;
+  overflow: visible;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), 0 12px 30px rgba(15, 23, 42, 0.08);
+  border-color: rgba(14, 116, 144, 0.25);
+  background: rgba(255,255,255,0.92);
 }
 
 .metric-label {
-    font-size: 0.85rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: var(--weight-medium);
+  color: var(--clr-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 0.4rem;
 }
 
 .metric-value {
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: #102a43;
-    margin: 0.1rem 0;
+  font-size: 2.1rem;
+  font-weight: var(--weight-medium);
+  color: var(--clr-deep);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  animation: value-pulse 0.45s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 }
 
-.metric-note {
-    font-size: 0.88rem;
-    color: #475569;
+.metric-delta {
+  font-size: 0.82rem;
+  color: var(--clr-muted);
+  margin-top: 0.3rem;
 }
 
-/* Panel Notes */
-.panel-note {
-    background: rgba(255,255,255,0.8);
-    border-left: 4px solid #0e7490;
-    padding: 0.8rem 1rem;
-    border-radius: 12px;
-    color: #334155;
+.metric-card.risk-critical {
+  border-color: rgba(220, 38, 38, 0.35) !important;
+  background: rgba(220, 38, 38, 0.03) !important;
+  animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Made with Bob */
+.metric-card.risk-warning {
+  border-color: rgba(217, 119, 6, 0.35) !important;
+  background: rgba(217, 119, 6, 0.03) !important;
+  animation: pulse-warning-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.metric-card.risk-stable {
+  border-color: rgba(22, 163, 74, 0.25) !important;
+  background: rgba(22, 163, 74, 0.02) !important;
+}
+
+/* ── Interpreter boxes (Glass style) ─────────────────────────────────────── */
+.interpret-box {
+  background: rgba(14, 116, 144, 0.05);
+  border-left: 4px solid var(--clr-teal);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 1rem 1.4rem;
+  font-size: 0.88rem;
+  color: var(--clr-slate);
+  line-height: 1.7;
+  margin: 1.2rem 0;
+  border-top: 1px solid rgba(14,116,144,0.06);
+  border-bottom: 1px solid rgba(14,116,144,0.06);
+  border-right: 1px solid rgba(14,116,144,0.06);
+  backdrop-filter: blur(8px);
+}
+
+.interpret-box strong { font-weight: var(--weight-medium); }
+
+/* ── Sidebar state risk card ─────────────────────────────────────────────── */
+.sidebar-risk-card {
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.04);
+  transition: all 0.3s ease;
+}
+
+.sidebar-risk-card.risk-critical {
+  border-color: rgba(220, 38, 38, 0.40) !important;
+  background: rgba(220, 38, 38, 0.06) !important;
+  box-shadow: 0 0 15px rgba(220,38,38,0.15);
+}
+
+.sidebar-risk-card.risk-warning {
+  border-color: rgba(217, 119, 6, 0.40) !important;
+  background: rgba(217, 119, 6, 0.06) !important;
+  box-shadow: 0 0 15px rgba(217,119,6,0.15);
+}
+
+.sidebar-risk-card.risk-stable {
+  border-color: rgba(22, 163, 74, 0.30) !important;
+  background: rgba(22, 163, 74, 0.04) !important;
+}
+
+.sidebar-risk-title {
+  font-size: 0.72rem !important;
+  font-weight: var(--weight-medium) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b !important;
+  margin-bottom: 0.4rem;
+}
+
+.sidebar-risk-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: var(--weight-medium);
+}
+
+/* ── Plotly chart containers (tactile hover) ───────────────────────────────── */
+[data-testid="stPlotlyChart"] > div {
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--clr-border) !important;
+  transition: all 0.35s ease;
+}
+
+[data-testid="stPlotlyChart"] > div:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* ── Streamlit native widget styling ─────────────────────────────────────── */
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stMultiSelect"] > div > div {
+  border-radius: 12px !important;
+  border-color: var(--clr-border) !important;
+  font-family: var(--font) !important;
+  font-size: 0.88rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-testid="stSelectbox"] > div > div:hover,
+[data-testid="stMultiSelect"] > div > div:hover {
+  border-color: var(--clr-teal) !important;
+  box-shadow: 0 0 0 1px var(--clr-teal) !important;
+}
+
+.stSlider > div > div > div > div {
+  font-family: var(--font) !important;
+}
+
+[data-testid="stSlider"] label,
+[data-testid="stSelectbox"] label,
+[data-testid="stMultiSelect"] label {
+  font-size: 0.84rem !important;
+  font-weight: var(--weight-medium) !important;
+  color: var(--clr-slate) !important;
+  letter-spacing: 0.02em;
+}
+
+/* Primary buttons (tactile scaling and glowing) */
+[data-testid="stButton"] > button[kind="primary"] {
+  background: linear-gradient(135deg, var(--clr-teal) 0%, #0891b2 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 1.5rem !important;
+  font-family: var(--font) !important;
+  font-weight: var(--weight-medium) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  box-shadow: 0 4px 14px rgba(14, 116, 144, 0.35) !important;
+}
+
+[data-testid="stButton"] > button[kind="primary"]:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 22px rgba(14, 116, 144, 0.50) !important;
+  opacity: 1 !important;
+}
+
+[data-testid="stButton"] > button[kind="primary"]:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Secondary buttons */
+[data-testid="stButton"] > button {
+  font-family: var(--font) !important;
+  font-weight: var(--weight-medium) !important;
+  font-size: 0.88rem !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--clr-border) !important;
+  padding: 0.5rem 1.2rem !important;
+  transition: all 0.2s ease !important;
+  background: white !important;
+}
+
+[data-testid="stButton"] > button:hover {
+  transform: translateY(-1px) !important;
+  border-color: var(--clr-slate) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: var(--clr-deep) !important;
+}
+
+/* ── Dataframe / table ───────────────────────────────────────────────────── */
+[data-testid="stDataFrame"] > div,
+[data-testid="stTable"] {
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+  border: 1px solid var(--clr-border) !important;
+  box-shadow: var(--shadow-sm) !important;
+  font-family: var(--font) !important;
+  font-size: 0.82rem !important;
+}
+
+/* ── Expanders ───────────────────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+  border: 1px solid var(--clr-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  background: white;
+}
+
+[data-testid="stExpander"] > div:first-child {
+  font-family: var(--font) !important;
+  font-weight: var(--weight-medium) !important;
+  font-size: 0.9rem !important;
+  padding: 0.85rem 1.2rem !important;
+  background: rgba(248, 250, 252, 0.8) !important;
+  transition: background 0.2s ease;
+}
+
+[data-testid="stExpander"] > div:first-child:hover {
+  background: rgba(241, 245, 249, 0.95) !important;
+}
+
+/* ── Metric widget (st.metric glassmorphism) ─────────────────────────────── */
+[data-testid="stMetric"] {
+  background: var(--clr-surface) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-md) !important;
+  padding: 1.1rem 1.3rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.40) !important;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.60) !important;
+  transition: all 0.3s ease;
+}
+
+[data-testid="stMetric"]:hover {
+  border-color: rgba(14, 116, 144, 0.20) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+[data-testid="stMetricLabel"] {
+  font-size: 0.72rem !important;
+  font-weight: var(--weight-medium) !important;
+  color: var(--clr-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+[data-testid="stMetricValue"] {
+  font-size: 1.9rem !important;
+  font-weight: var(--weight-medium) !important;
+  color: var(--clr-deep) !important;
+  letter-spacing: -0.03em;
+}
+
+/* ── Info / warning / success alerts ─────────────────────────────────────── */
+[data-testid="stAlert"] {
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font) !important;
+  font-size: 0.88rem !important;
+  border: 1px solid rgba(0,0,0,0.03) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* ── Dividers ────────────────────────────────────────────────────────────── */
+hr {
+  border: none !important;
+  border-top: 1px solid var(--clr-border) !important;
+  margin: var(--gap-md) 0 !important;
+}
+
+/* ── Scrollbar (Webkit) ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.60); }
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6,
+[data-testid="stMarkdown"] h1,
+[data-testid="stMarkdown"] h2,
+[data-testid="stMarkdown"] h3 {
+  font-family: var(--font) !important;
+  font-weight: var(--weight-medium) !important;
+  color: var(--clr-deep) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ── Body text / paragraphs ──────────────────────────────────────────────── */
+p, span, li, td, th,
+[data-testid="stMarkdown"] p {
+  font-family: var(--font) !important;
+  font-weight: var(--weight-normal) !important;
+}
+
+/* ── Loading Spinner (Teal glow) ─────────────────────────────────────────── */
+[data-testid="stSpinner"] {
+  font-family: var(--font) !important;
+  color: var(--clr-teal) !important;
+}
+
+/* ── Download Button ─────────────────────────────────────────────────────── */
+[data-testid="stDownloadButton"] > button {
+  background: linear-gradient(135deg, var(--clr-teal) 0%, #0891b2 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 1.6rem !important;
+  font-family: var(--font) !important;
+  font-weight: var(--weight-medium) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 14px rgba(14, 116, 144, 0.30) !important;
+}
+
+[data-testid="stDownloadButton"] > button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(14, 116, 144, 0.45) !important;
+  opacity: 1 !important;
+}
+
+/* ── Radio ───────────────────────────────────────────────────────────────── */
+[data-testid="stRadio"] label {
+  font-family: var(--font) !important;
+  font-size: 0.88rem !important;
+  font-weight: var(--weight-normal) !important;
+}
+
+/* ── Grid Columns Gap ────────────────────────────────────────────────────── */
+[data-testid="stHorizontalBlock"] {
+  gap: 1.25rem !important;
+}

@@ -1,0 +1,37 @@
+state,Governance_Status,Policy_Action,Policy_Category,AMI,UPI,VSI,TPS
+Maharashtra,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.9428571434013605,0.9457317265849003,0.8824244193210934,0.6179840678557795
+Punjab,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.5809523849433106,0.8890772900915835,0.8700191057959545,0.7728105543926459
+Tamil Nadu,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.8285714302040816,0.8573241541079368,0.9125099876607508,0.5133211898932137
+Andhra Pradesh,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.7333333358730159,0.9060665684457017,0.7673624021146104,0.49634122755603177
+Haryana,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.6095238132426304,0.7997379526444595,0.8189305049322579,0.5820732226792729
+Delhi,Transitional,Balance investment across enrollment and update services.,High Maintenance Stress,0.5809523849433106,0.7770108406769102,0.7970198058487603,0.771787684332161
+Lakshadweep,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Unpredictable - Needs Monitoring,9.523809407774309e-09,0.5053176255499593,0.11776719427223352,0.0
+Uttarakhand,Unpredictable System,Increase monitoring and investigate administrative or reporting irregularities.,Unpredictable - Needs Monitoring,0.4571428623129251,0.8597946965364337,0.38161755337196346,0.28185528249997843
+Himachal Pradesh,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.38095238684807253,0.6280994819143418,0.6164549522269882,0.5359953975677937
+Rajasthan,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.8571428585034013,0.6327956100229555,0.999999632151164,0.6675897359737306
+Chhattisgarh,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.7142857170068027,0.999999551975903,0.5474192714490103,0.746061801209637
+West Bengal,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.8476190490702947,0.5442442602371207,0.9817997660250801,0.5802845555635363
+Gujarat,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.800000001904762,0.6012528381066714,0.7685047454948256,0.47722128737015135
+Manipur,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.37142857741496593,0.9249674385048,0.13747091957310034,0.41293282903622125
+Jharkhand,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.6666666698412698,0.6193531432563179,0.8118504260501227,0.7169705013845425
+Karnataka,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.7619047641723355,0.6324631849206708,0.7758209684591568,0.6492579914539423
+Madhya Pradesh,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.9238095245351474,0.597383555756217,0.897476331500919,0.7030376516672944
+Chandigarh,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.20000000761904757,0.6971640109994648,0.471907680685179,0.8777861064140151
+Jammu And Kashmir,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.4476190528798185,0.6200146781115413,0.445555961520005,0.43339414576126284
+Uttar Pradesh,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,1.0,0.5846256932941682,0.7778191253125293,0.5534832953578294
+Bihar,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.9333333339682539,0.5457918712766545,0.8115396542899144,0.7342717325044404
+Telangana,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.6571428604081633,0.6776154834938435,0.33179814358019616,0.510506257313678
+Odisha,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.5619047660770975,0.5581870013295308,0.6599766274435787,0.8154094741646537
+Dadra And Nagar Haveli And Daman And Diu,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.09523810385487519,0.7086683540651476,0.06374044220303784,0.6465558759149977
+Mizoram,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.23809524535147386,0.5618302437127164,0.29459318756077874,0.6814575908501226
+Assam,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.6285714321088435,0.25385124302450335,0.5590443244475237,0.39074587356207297
+Andaman And Nicobar Islands,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.0571428661224489,0.7768829494770417,0.0,0.9834083539455073
+Tripura,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.33333333968253964,0.5945947061749611,0.07590931844238646,0.517442020691084
+Goa,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.18095238875283437,0.7055860302780044,0.14225738939916183,0.9962249288933247
+Puducherry,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.20000000761904757,0.6655276724606968,0.08920809323021578,0.8798629905427064
+Nagaland,Transitional,Balance investment across enrollment and update services.,Expansion Phase,0.24761905478458046,0.34273488840210947,0.3325012582344822,0.6856449567986279
+Sikkim,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.09523810385487519,0.42312278498801503,0.22795016729845102,0.9999989272383146
+Kerala,Transitional,Balance investment across enrollment and update services.,Balanced / Transitional,0.4666666717460317,0.533925162150044,0.07837470600120867,0.6909668638023956
+Arunachal Pradesh,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Balanced / Transitional,0.22857143591836726,0.5310702969957226,0.13957985796815056,0.9053874712034696
+Meghalaya,Transitional,Balance investment across enrollment and update services.,Expansion Phase,0.33333333968253964,0.0,0.37573101851133967,0.5511550679702244
+Ladakh,Stable Mature,Optimize operations and invest in fraud detection plus service quality.,Expansion Phase,0.0380952472562357,0.2573396766781765,0.0672167613585185,0.9980367106070692

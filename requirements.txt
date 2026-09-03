@@ -1,54 +1,5 @@
-# Core Data Science & ML
-pandas==2.2.3
+# Runtime dependencies for the deployed Streamlit dashboard.
 numpy==2.4.4
-scipy==1.17.1
-scikit-learn==1.6.1
-
-# Statistical Modeling & Time Series
-statsmodels==0.14.4
-
-# Visualization
-matplotlib==3.10.8
-seaborn==0.13.2
+pandas==2.2.3
 plotly==6.7.0
-
-# Dashboard & Web Framework
 streamlit==1.57.0
-
-# Advanced ML & Interpretability
-shap==0.47.0
-umap-learn==0.5.8
-
-# Anomaly Detection
-pyod==2.0.2
-
-# Causal Inference
-causalimpact==0.1.1
-lightgbm==4.5.0
-
-# Development & Testing
-pytest==8.3.5
-pytest-cov==6.0.0
-pytest-mock==3.14.0
-hypothesis==6.122.3
-black==25.1.0
-flake8==7.1.1
-mypy==1.15.0
-ruff==0.11.0
-
-# MLOps & Experiment Tracking
-mlflow==2.19.0
-great-expectations==1.18.1
-pandera==0.31.1
-
-# Configuration Management
-pydantic==2.13.3
-pydantic-settings==2.14.0
-python-dotenv==1.2.2
-
-# Logging
-python-json-logger==4.1.0
-
-# Type Stubs
-pandas-stubs==2.2.3.250527
-types-requests==2.32.0.20250602

@@ -1,0 +1,163 @@
+state,cause,effect,cause_diffs,effect_diffs,lag,f_statistic,p_value,significant
+Andhra Pradesh,Enrollment,Demographic Updates,1,1,1,3.90786737404096,0.1866929452823909,False
+Andhra Pradesh,Enrollment,Demographic Updates,1,1,2,,,False
+Andhra Pradesh,Enrollment,Demographic Updates,1,1,3,,,False
+Andhra Pradesh,Enrollment,Biometric Updates,1,0,1,0.005579647754527095,0.9472547403730401,False
+Andhra Pradesh,Enrollment,Biometric Updates,1,0,2,,,False
+Andhra Pradesh,Enrollment,Biometric Updates,1,0,3,,,False
+Andhra Pradesh,Demographic Updates,Biometric Updates,1,0,1,0.1023506383150864,0.7793557052811511,False
+Andhra Pradesh,Demographic Updates,Biometric Updates,1,0,2,,,False
+Andhra Pradesh,Demographic Updates,Biometric Updates,1,0,3,,,False
+Assam,Enrollment,Demographic Updates,2,2,1,2.597398433923707,0.20542927763349883,False
+Assam,Enrollment,Demographic Updates,2,2,2,,,False
+Assam,Enrollment,Demographic Updates,2,2,3,,,False
+Assam,Enrollment,Biometric Updates,2,1,1,0.759285453030773,0.44767666252095784,False
+Assam,Enrollment,Biometric Updates,2,1,2,,,False
+Assam,Enrollment,Biometric Updates,2,1,3,,,False
+Assam,Demographic Updates,Biometric Updates,2,1,1,0.8761279203290817,0.4183139154619402,False
+Assam,Demographic Updates,Biometric Updates,2,1,2,,,False
+Assam,Demographic Updates,Biometric Updates,2,1,3,,,False
+Bihar,Enrollment,Demographic Updates,2,1,1,2.2844724068903557,0.2697958728329466,False
+Bihar,Enrollment,Demographic Updates,2,1,2,,,False
+Bihar,Enrollment,Demographic Updates,2,1,3,,,False
+Bihar,Enrollment,Biometric Updates,2,2,1,1.1978321389692046,0.3879736095511579,False
+Bihar,Enrollment,Biometric Updates,2,2,2,,,False
+Bihar,Enrollment,Biometric Updates,2,2,3,,,False
+Bihar,Demographic Updates,Biometric Updates,1,2,1,0.9594588046187249,0.43061369553909024,False
+Bihar,Demographic Updates,Biometric Updates,1,2,2,,,False
+Bihar,Demographic Updates,Biometric Updates,1,2,3,,,False
+Chhattisgarh,Enrollment,Demographic Updates,2,1,1,0.0031742299294409185,0.9586131358624503,False
+Chhattisgarh,Enrollment,Demographic Updates,2,1,2,,,False
+Chhattisgarh,Enrollment,Demographic Updates,2,1,3,,,False
+Chhattisgarh,Enrollment,Biometric Updates,2,0,1,0.023833543632195198,0.8871104024063916,False
+Chhattisgarh,Enrollment,Biometric Updates,2,0,2,,,False
+Chhattisgarh,Enrollment,Biometric Updates,2,0,3,,,False
+Chhattisgarh,Demographic Updates,Biometric Updates,1,0,1,0.4781803079697857,0.5389565465194023,False
+Chhattisgarh,Demographic Updates,Biometric Updates,1,0,2,,,False
+Chhattisgarh,Demographic Updates,Biometric Updates,1,0,3,,,False
+Delhi,Enrollment,Demographic Updates,2,2,1,1.7567221475057537,0.2769304240136581,False
+Delhi,Enrollment,Demographic Updates,2,2,2,,,False
+Delhi,Enrollment,Demographic Updates,2,2,3,,,False
+Delhi,Enrollment,Biometric Updates,2,1,1,0.4732707110578068,0.5409056768033418,False
+Delhi,Enrollment,Biometric Updates,2,1,2,,,False
+Delhi,Enrollment,Biometric Updates,2,1,3,,,False
+Delhi,Demographic Updates,Biometric Updates,2,1,1,5.801468776334654,0.09513447773274164,False
+Delhi,Demographic Updates,Biometric Updates,2,1,2,,,False
+Delhi,Demographic Updates,Biometric Updates,2,1,3,,,False
+Gujarat,Enrollment,Demographic Updates,2,0,1,2.522422252182815,0.2104444175415221,False
+Gujarat,Enrollment,Demographic Updates,2,0,2,,,False
+Gujarat,Enrollment,Demographic Updates,2,0,3,,,False
+Gujarat,Enrollment,Biometric Updates,2,2,1,1.1195682465609538,0.3676702815848977,False
+Gujarat,Enrollment,Biometric Updates,2,2,2,,,False
+Gujarat,Enrollment,Biometric Updates,2,2,3,,,False
+Gujarat,Demographic Updates,Biometric Updates,0,2,1,0.020927069247671935,0.8941497295856666,False
+Gujarat,Demographic Updates,Biometric Updates,0,2,2,,,False
+Gujarat,Demographic Updates,Biometric Updates,0,2,3,,,False
+Haryana,Enrollment,Demographic Updates,1,2,1,0.5672093608656057,0.5060835061198,False
+Haryana,Enrollment,Demographic Updates,1,2,2,,,False
+Haryana,Enrollment,Demographic Updates,1,2,3,,,False
+Haryana,Enrollment,Biometric Updates,1,1,1,0.2728813330434038,0.6375269979586176,False
+Haryana,Enrollment,Biometric Updates,1,1,2,,,False
+Haryana,Enrollment,Biometric Updates,1,1,3,,,False
+Haryana,Demographic Updates,Biometric Updates,2,1,1,0.7446755623908147,0.45163574034639176,False
+Haryana,Demographic Updates,Biometric Updates,2,1,2,,,False
+Haryana,Demographic Updates,Biometric Updates,2,1,3,,,False
+Karnataka,Enrollment,Demographic Updates,2,1,1,0.1209459221303034,0.750981371261942,False
+Karnataka,Enrollment,Demographic Updates,2,1,2,,,False
+Karnataka,Enrollment,Demographic Updates,2,1,3,,,False
+Karnataka,Enrollment,Biometric Updates,2,2,1,0.10624559062914213,0.7658727812866349,False
+Karnataka,Enrollment,Biometric Updates,2,2,2,,,False
+Karnataka,Enrollment,Biometric Updates,2,2,3,,,False
+Karnataka,Demographic Updates,Biometric Updates,1,2,1,0.008210147898479658,0.9335134424005467,False
+Karnataka,Demographic Updates,Biometric Updates,1,2,2,,,False
+Karnataka,Demographic Updates,Biometric Updates,1,2,3,,,False
+Madhya Pradesh,Enrollment,Demographic Updates,1,0,1,0.1268759917883615,0.7452704730217705,False
+Madhya Pradesh,Enrollment,Demographic Updates,1,0,2,,,False
+Madhya Pradesh,Enrollment,Demographic Updates,1,0,3,,,False
+Madhya Pradesh,Enrollment,Biometric Updates,1,2,1,1.3114536793654856,0.33521026653053276,False
+Madhya Pradesh,Enrollment,Biometric Updates,1,2,2,,,False
+Madhya Pradesh,Enrollment,Biometric Updates,1,2,3,,,False
+Madhya Pradesh,Demographic Updates,Biometric Updates,0,2,1,0.058301939842017314,0.8247631666458717,False
+Madhya Pradesh,Demographic Updates,Biometric Updates,0,2,2,,,False
+Madhya Pradesh,Demographic Updates,Biometric Updates,0,2,3,,,False
+Maharashtra,Enrollment,Demographic Updates,2,2,1,3.689550675815892,0.1505163120632067,False
+Maharashtra,Enrollment,Demographic Updates,2,2,2,,,False
+Maharashtra,Enrollment,Demographic Updates,2,2,3,,,False
+Maharashtra,Enrollment,Biometric Updates,2,2,1,25.48617505385046,0.014991101902210646,True
+Maharashtra,Enrollment,Biometric Updates,2,2,2,,,False
+Maharashtra,Enrollment,Biometric Updates,2,2,3,,,False
+Maharashtra,Demographic Updates,Biometric Updates,2,2,1,0.04512871597542725,0.8453829637617741,False
+Maharashtra,Demographic Updates,Biometric Updates,2,2,2,,,False
+Maharashtra,Demographic Updates,Biometric Updates,2,2,3,,,False
+Mizoram,Enrollment,Demographic Updates,2,1,1,3.6537909546874205,0.19610009967148512,False
+Mizoram,Enrollment,Demographic Updates,2,1,2,,,False
+Mizoram,Enrollment,Demographic Updates,2,1,3,,,False
+Mizoram,Enrollment,Biometric Updates,2,2,1,0.28587997198537224,0.646356928276094,False
+Mizoram,Enrollment,Biometric Updates,2,2,2,,,False
+Mizoram,Enrollment,Biometric Updates,2,2,3,,,False
+Mizoram,Demographic Updates,Biometric Updates,1,2,1,0.25437670266181656,0.664088074081097,False
+Mizoram,Demographic Updates,Biometric Updates,1,2,2,,,False
+Mizoram,Demographic Updates,Biometric Updates,1,2,3,,,False
+Punjab,Enrollment,Demographic Updates,1,1,1,0.9688029152807389,0.39755450701270767,False
+Punjab,Enrollment,Demographic Updates,1,1,2,,,False
+Punjab,Enrollment,Demographic Updates,1,1,3,,,False
+Punjab,Enrollment,Biometric Updates,1,2,1,2.0317805160121902,0.24927239782937616,False
+Punjab,Enrollment,Biometric Updates,1,2,2,,,False
+Punjab,Enrollment,Biometric Updates,1,2,3,,,False
+Punjab,Demographic Updates,Biometric Updates,1,2,1,4.303178797509552,0.1296937090170065,False
+Punjab,Demographic Updates,Biometric Updates,1,2,2,,,False
+Punjab,Demographic Updates,Biometric Updates,1,2,3,,,False
+Rajasthan,Enrollment,Demographic Updates,1,0,1,3.977212527608648,0.11687561085154208,False
+Rajasthan,Enrollment,Demographic Updates,1,0,2,35.07064068889112,0.11856026417882592,False
+Rajasthan,Enrollment,Demographic Updates,1,0,3,,,False
+Rajasthan,Enrollment,Biometric Updates,1,1,1,59.5205921006014,0.0015194064496266702,True
+Rajasthan,Enrollment,Biometric Updates,1,1,2,39.1005255851676,0.1123658980664316,False
+Rajasthan,Enrollment,Biometric Updates,1,1,3,,,False
+Rajasthan,Demographic Updates,Biometric Updates,0,1,1,0.879575928195847,0.401415846317035,False
+Rajasthan,Demographic Updates,Biometric Updates,0,1,2,3.3310809973016777,0.36126370797364493,False
+Rajasthan,Demographic Updates,Biometric Updates,0,1,3,,,False
+Tamil Nadu,Enrollment,Demographic Updates,1,1,1,0.6259285098009989,0.4866319923477336,False
+Tamil Nadu,Enrollment,Demographic Updates,1,1,2,,,False
+Tamil Nadu,Enrollment,Demographic Updates,1,1,3,,,False
+Tamil Nadu,Enrollment,Biometric Updates,1,2,1,0.0010729121274659084,0.9759271204529816,False
+Tamil Nadu,Enrollment,Biometric Updates,1,2,2,,,False
+Tamil Nadu,Enrollment,Biometric Updates,1,2,3,,,False
+Tamil Nadu,Demographic Updates,Biometric Updates,1,2,1,0.02132224100299057,0.893164311254553,False
+Tamil Nadu,Demographic Updates,Biometric Updates,1,2,2,,,False
+Tamil Nadu,Demographic Updates,Biometric Updates,1,2,3,,,False
+Telangana,Enrollment,Demographic Updates,2,1,1,0.49215785242329546,0.5556098379835296,False
+Telangana,Enrollment,Demographic Updates,2,1,2,,,False
+Telangana,Enrollment,Demographic Updates,2,1,3,,,False
+Telangana,Enrollment,Biometric Updates,2,0,1,0.0036077337297611,0.957566301265244,False
+Telangana,Enrollment,Biometric Updates,2,0,2,,,False
+Telangana,Enrollment,Biometric Updates,2,0,3,,,False
+Telangana,Demographic Updates,Biometric Updates,1,0,1,0.23601838992113225,0.6751108288527532,False
+Telangana,Demographic Updates,Biometric Updates,1,0,2,,,False
+Telangana,Demographic Updates,Biometric Updates,1,0,3,,,False
+Uttar Pradesh,Enrollment,Demographic Updates,1,2,1,0.24805359099742186,0.6526702358856924,False
+Uttar Pradesh,Enrollment,Demographic Updates,1,2,2,,,False
+Uttar Pradesh,Enrollment,Demographic Updates,1,2,3,,,False
+Uttar Pradesh,Enrollment,Biometric Updates,1,1,1,4.2501598352620045,0.131295427670579,False
+Uttar Pradesh,Enrollment,Biometric Updates,1,1,2,,,False
+Uttar Pradesh,Enrollment,Biometric Updates,1,1,3,,,False
+Uttar Pradesh,Demographic Updates,Biometric Updates,2,1,1,1.2509075393417697,0.34486615882382055,False
+Uttar Pradesh,Demographic Updates,Biometric Updates,2,1,2,,,False
+Uttar Pradesh,Demographic Updates,Biometric Updates,2,1,3,,,False
+Uttarakhand,Enrollment,Demographic Updates,2,1,1,0.005907072059208762,0.9435757012877858,False
+Uttarakhand,Enrollment,Demographic Updates,2,1,2,,,False
+Uttarakhand,Enrollment,Demographic Updates,2,1,3,,,False
+Uttarakhand,Enrollment,Biometric Updates,2,2,1,3.9835101938897464,0.13988447010882854,False
+Uttarakhand,Enrollment,Biometric Updates,2,2,2,,,False
+Uttarakhand,Enrollment,Biometric Updates,2,2,3,,,False
+Uttarakhand,Demographic Updates,Biometric Updates,1,2,1,1.7135876075086267,0.2817618493178792,False
+Uttarakhand,Demographic Updates,Biometric Updates,1,2,2,,,False
+Uttarakhand,Demographic Updates,Biometric Updates,1,2,3,,,False
+West Bengal,Enrollment,Demographic Updates,2,1,1,0.5254817825658341,0.5209365733127065,False
+West Bengal,Enrollment,Demographic Updates,2,1,2,,,False
+West Bengal,Enrollment,Demographic Updates,2,1,3,,,False
+West Bengal,Enrollment,Biometric Updates,2,1,1,1.4483997548083662,0.31509145938403793,False
+West Bengal,Enrollment,Biometric Updates,2,1,2,,,False
+West Bengal,Enrollment,Biometric Updates,2,1,3,,,False
+West Bengal,Demographic Updates,Biometric Updates,1,1,1,2.241713725537583,0.23124852299977072,False
+West Bengal,Demographic Updates,Biometric Updates,1,1,2,,,False
+West Bengal,Demographic Updates,Biometric Updates,1,1,3,,,False

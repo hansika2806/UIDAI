@@ -1,0 +1,37 @@
+state,n_obs,model_fitted,aic,order,seasonal_order,capacity_threshold,months_to_breach,backtest_mape,backtest_rmse,backtest_mae
+Andaman And Nicobar Islands,4,True,999.0,Fallback (Linear Regression),None,1975.0,1,,,
+Andhra Pradesh,7,True,999.0,Fallback (Linear Regression),None,463368.75,1,68.3340769166541,212311.5292132766,210294.2
+Arunachal Pradesh,4,True,999.0,Fallback (Linear Regression),None,11196.25,9,,,
+Assam,9,True,999.0,Fallback (Linear Regression),None,229872.5,1,34.087926578970304,61740.562682673124,55528.66071428573
+Bihar,8,True,999.0,Fallback (Linear Regression),None,1225101.25,1,27.197177119297432,189323.12175102407,188579.4714285715
+Chandigarh,5,True,999.0,Fallback (Linear Regression),None,13130.0,7,72.98405127440753,4896.500000000002,4896.500000000002
+Chhattisgarh,9,True,999.0,Fallback (Linear Regression),None,359006.25,1,42.30379865826279,115026.61212618164,108273.0357142857
+Dadra And Nagar Haveli And Daman And Diu,4,True,999.0,Fallback (Linear Regression),None,2837.5,1,,,
+Delhi,9,True,999.0,Fallback (Linear Regression),None,233906.25,7,85.17575896078728,91495.10444386918,87431.4107142858
+Goa,4,True,999.0,Fallback (Linear Regression),None,8158.75,1,,,
+Gujarat,9,True,999.0,Fallback (Linear Regression),None,431185.0,2,78.3165848060942,201476.12594900426,195833.83928571435
+Haryana,9,True,999.0,Fallback (Linear Regression),None,169578.75,2,53.09635421207548,67005.26231105355,64112.5178571429
+Himachal Pradesh,5,True,999.0,Fallback (Linear Regression),None,35873.75,1,3.6757108415291904,960.4999999999927,960.4999999999927
+Jammu And Kashmir,7,True,999.0,Fallback (Linear Regression),None,78755.0,1,42.16104250299292,25404.24087480279,23041.950000000015
+Jharkhand,6,True,999.0,Fallback (Linear Regression),None,507195.0,4,64.69205291179998,125393.90000000014,125393.90000000014
+Karnataka,9,True,999.0,Fallback (Linear Regression),None,371006.25,2,64.77466901853235,149873.02248660722,145501.69642857154
+Kerala,4,True,999.0,Fallback (Linear Regression),None,212672.5,1,,,
+Ladakh,4,True,999.0,Fallback (Linear Regression),None,1585.0,1,,,
+Lakshadweep,4,True,999.0,Fallback (Linear Regression),None,362.5,1,,,
+Madhya Pradesh,9,True,999.0,Fallback (Linear Regression),None,614396.25,4,60.342306219342134,184265.42966725805,178506.2142857144
+Maharashtra,9,True,999.0,Fallback (Linear Regression),None,1899447.5,2,63.499612969219335,874819.6970655746,762087.8392857143
+Manipur,4,True,999.0,Fallback (Linear Regression),None,141836.25,1,,,
+Meghalaya,5,True,999.0,Fallback (Linear Regression),None,32363.75,6,100.0,7418.0,7418.0
+Mizoram,8,True,999.0,Fallback (Linear Regression),None,5632.5,1,22.480865095146534,935.4718033081373,779.323809523808
+Nagaland,4,True,999.0,Fallback (Linear Regression),None,6543.75,5,,,
+Odisha,5,True,999.0,Fallback (Linear Regression),None,207773.75,1,18.149543906060888,29089.00000000003,29089.00000000003
+Puducherry,4,True,999.0,Fallback (Linear Regression),None,7868.75,1,,,
+Punjab,9,True,999.0,Fallback (Linear Regression),None,157081.25,1,32.28727550913292,32407.68012953396,32406.982142857167
+Rajasthan,9,True,999.0,Fallback (Linear Regression),None,1057175.0,5,100.0,295530.26409912744,294227.5
+Sikkim,4,True,999.0,Fallback (Linear Regression),None,5350.0,7,,,
+Tamil Nadu,9,True,999.0,Fallback (Linear Regression),None,484667.5,1,66.11084305100454,248986.26773489272,248671.66071428577
+Telangana,8,True,999.0,Fallback (Linear Regression),None,294261.25,1,17.539234241580164,42507.16110960014,39558.404761904734
+Tripura,4,True,999.0,Fallback (Linear Regression),None,36372.5,1,,,
+Uttar Pradesh,9,True,999.0,Fallback (Linear Regression),None,2024198.75,1,67.48252445604244,900445.4567195921,881480.017857143
+Uttarakhand,9,True,999.0,Fallback (Linear Regression),None,88612.5,2,67.94233853745317,42350.12064472884,40281.625000000015
+West Bengal,9,True,999.0,Fallback (Linear Regression),None,826880.0,1,18.223923101758416,136364.24027458183,109802.30357142849

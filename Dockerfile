@@ -35,14 +35,17 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data/raw data/cleaned data/analysis
 
-# Expose Streamlit port
-EXPOSE 8501
+# Default port (Cloud Run sets PORT=8080 by default; local defaults to 8080 or 8501)
+ENV PORT=8080
+
+# Expose container port
+EXPOSE 8080 8501
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+    CMD curl --fail http://localhost:${PORT}/_stcore/health || exit 1
 
-# Default command: run Streamlit dashboard
-CMD ["streamlit", "run", "dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Default command: run Streamlit dashboard honoring $PORT for Cloud Run and local environments
+CMD ["sh", "-c", "streamlit run dashboard/app.py --server.port=${PORT} --server.address=0.0.0.0 --server.headless=true --browser.gatherUsageStats=false"]
 
 # Made with Bob

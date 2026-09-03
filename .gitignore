@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
-data/
+data/raw/*/
+data/cleaned/*.csv
+data/analysis/*_analysis_ready.csv
 models/
 .pytest_cache/

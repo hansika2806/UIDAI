@@ -1,0 +1,37 @@
+state,cusum_max,critical_value,break_detected,n_observations,break_month
+Andaman And Nicobar Islands,,,False,4,
+Andhra Pradesh,22.764151147156127,2.716,True,7,2025-12
+Arunachal Pradesh,,,False,4,
+Assam,19.62903080954635,3.036580313444715,True,9,2025-12
+Bihar,14.379306243284372,2.716,True,8,2025-12
+Chandigarh,,,False,5,
+Chhattisgarh,9.67780529122318,3.036580313444715,True,9,2025-12
+Dadra And Nagar Haveli And Daman And Diu,,,False,4,
+Delhi,21.412308124837867,3.036580313444715,True,9,2025-12
+Goa,,,False,4,
+Gujarat,17.84959422344255,3.036580313444715,True,9,2025-12
+Haryana,21.852523994613865,3.036580313444715,True,9,2025-12
+Himachal Pradesh,,,False,5,
+Jammu And Kashmir,328.2310889900708,2.716,True,7,2025-12
+Jharkhand,15.036540972565826,2.3521249966785356,True,6,2025-12
+Karnataka,19.305062853906023,3.036580313444715,True,9,2025-12
+Kerala,,,False,4,
+Ladakh,,,False,4,
+Lakshadweep,,,False,4,
+Madhya Pradesh,19.54108111870762,3.036580313444715,True,9,2025-12
+Maharashtra,19.463729287881733,3.036580313444715,True,9,2025-12
+Manipur,,,False,4,
+Meghalaya,,,False,5,
+Mizoram,11.826067519766166,2.716,True,8,2025-12
+Nagaland,,,False,4,
+Odisha,,,False,5,
+Puducherry,,,False,4,
+Punjab,18.87373914051926,3.036580313444715,True,9,2025-12
+Rajasthan,19.88723281544123,3.036580313444715,True,9,2025-12
+Sikkim,,,False,4,
+Tamil Nadu,20.587505677846714,3.036580313444715,True,9,2025-12
+Telangana,25.37169926140632,2.716,True,8,2025-12
+Tripura,,,False,4,
+Uttar Pradesh,20.041647090411725,3.036580313444715,True,9,2025-12
+Uttarakhand,1.1720786043397262,3.036580313444715,False,9,
+West Bengal,20.079923540996212,3.036580313444715,True,9,2025-12

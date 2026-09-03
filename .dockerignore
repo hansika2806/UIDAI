@@ -30,7 +30,7 @@ htmlcov/
 data/raw/*.zip
 data/raw/**/*.csv
 data/cleaned/*.csv
-data/analysis/*.csv
+data/analysis/*_analysis_ready.csv
 
 # MLflow
 mlruns/
