@@ -1,0 +1,35 @@
+[server]
+# Bind to all interfaces so Docker / Cloud Run can reach the app
+address = "0.0.0.0"
+port = 8501
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+
+# Disable telemetry
+gatherUsageStats = false
+
+[browser]
+# Don't auto-open a browser tab in headless/server environments
+serverAddress = "0.0.0.0"
+gatherUsageStats = false
+
+[runner]
+# Silence the "running as root" warning in Docker containers
+magicEnabled = true
+
+[theme]
+# Matches the CSS palette: ocean-slate + teal + amber
+base = "light"
+primaryColor        = "#0e7490"   # --clr-teal
+backgroundColor     = "#f8fafc"   # --clr-bg
+secondaryBackgroundColor = "#f1f5f9"
+textColor           = "#0f172a"   # --clr-deep
+font                = "sans serif"
+
+[logger]
+level = "warning"
+
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"

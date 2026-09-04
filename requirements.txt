@@ -1,5 +1,32 @@
 # Runtime dependencies for the deployed Streamlit dashboard.
+# ── Core data ────────────────────────────────────────────────────────────────
 numpy==2.4.4
 pandas==2.2.3
+scipy==1.17.1
+
+# ── Visualisation & dashboard ────────────────────────────────────────────────
 plotly==6.7.0
 streamlit==1.57.0
+
+# ── Machine learning ─────────────────────────────────────────────────────────
+scikit-learn==1.6.1
+joblib
+
+# ── Time-series / forecasting ────────────────────────────────────────────────
+statsmodels==0.14.4
+
+# ── Gradient boosting & interpretability ────────────────────────────────────
+lightgbm==4.5.0
+shap==0.47.0
+
+# ── Anomaly detection ────────────────────────────────────────────────────────
+pyod==2.0.2
+
+# ── Data validation ──────────────────────────────────────────────────────────
+pandera==0.31.1
+
+# ── Config & logging ─────────────────────────────────────────────────────────
+pydantic==2.13.3
+pydantic-settings==2.14.0
+python-dotenv==1.2.2
+python-json-logger==4.1.0
