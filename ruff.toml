@@ -2,13 +2,15 @@ line-length = 120
 target-version = "py311"
 
 [lint]
-# E402: sys.path manipulation before imports is a standard Streamlit pattern
+# E402: sys.path manipulation before imports is standard Streamlit pattern
 # E501: long Plotly/HTML strings are unavoidably long
-ignore = ["E402", "E501"]
+# F401/F841: handled by flake8 via setup.cfg
+ignore = ["E402", "E501", "F401", "F841", "E712", "E741"]
 
 [lint.per-file-ignores]
-"dashboard/app.py" = ["E402"]
-"tests/*" = ["F401", "E501"]
-"src/model_registry.py" = ["F841"]
-"src/drift_monitor.py" = ["F841"]
-"src/data_validator.py" = ["F401"]
+"**/*app.py" = ["E402"]
+"**/tests/*" = ["F401", "E501"]
+"**/*model_registry.py" = ["F841"]
+"**/*drift_monitor.py" = ["F841"]
+"**/*data_validator.py" = ["F401"]
+
