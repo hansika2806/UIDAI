@@ -29,7 +29,7 @@ def metric_card(
 ) -> None:
     """Render a single metric card with optional risk styling and dynamic text scaling."""
     cls = f"metric-card {risk_class}".strip()
-    
+
     # Calculate responsive font size to prevent overlapping or overflow
     font_size = "2.1rem"
     if len(value) > 20:
@@ -38,8 +38,12 @@ def metric_card(
         font_size = "1.25rem"
     elif len(value) > 9:
         font_size = "1.45rem"
-        
-    value_style = f"color:{color}; font-size:{font_size}; word-break:break-word; line-height:1.25;" if color else f"font-size:{font_size}; word-break:break-word; line-height:1.25;"
+
+    value_style = (
+        f"color:{color}; font-size:{font_size}; word-break:break-word; line-height:1.25;"
+        if color
+        else f"font-size:{font_size}; word-break:break-word; line-height:1.25;"
+    )
     st.markdown(
         f"""
         <div class="{cls}">
@@ -106,7 +110,11 @@ def render_kpis(
         metric_card(
             "Flagged States",
             str(flagged),
-            f"{high_risk} with 2+ simultaneous anomaly flags" if high_risk > 0 else "At least one anomaly rule triggered",
+            (
+                f"{high_risk} with 2+ simultaneous anomaly flags"
+                if high_risk > 0
+                else "At least one anomaly rule triggered"
+            ),
             risk_class=flagged_risk,
             color=flagged_color,
         )

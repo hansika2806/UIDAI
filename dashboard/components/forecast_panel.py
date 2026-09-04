@@ -53,7 +53,11 @@ def build_forecast_chart(
     # Compute opacity for this state
     ci_opacity_95 = 0.12
     ci_opacity_80 = 0.22
-    if model_summary is not None and not model_summary.empty and "backtest_mape" in model_summary.columns:
+    if (
+        model_summary is not None
+        and not model_summary.empty
+        and "backtest_mape" in model_summary.columns
+    ):
         valid_mapes = model_summary["backtest_mape"].dropna()
         if len(valid_mapes) >= 2:
             min_mape = float(valid_mapes.min())
@@ -69,51 +73,61 @@ def build_forecast_chart(
 
     # Historical data
     if not state_hist.empty:
-        fig.add_trace(go.Scatter(
-            x=state_hist["year_month"],
-            y=state_hist["D_total"],
-            mode="lines",
-            name="Historical",
-            line=dict(color="#102a43", width=2.5),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=state_hist["year_month"],
+                y=state_hist["D_total"],
+                mode="lines",
+                name="Historical",
+                line=dict(color="#102a43", width=2.5),
+            )
+        )
 
     if state_fc.empty:
-        fig.update_layout(title=f"{state}: No forecast available", template="plotly_white")
+        fig.update_layout(
+            title=f"{state}: No forecast available", template="plotly_white"
+        )
         return fig
 
     months = state_fc["forecast_month"].values
 
     # 95% CI band (opacity dynamic)
-    fig.add_trace(go.Scatter(
-        x=list(months) + list(months[::-1]),
-        y=list(state_fc["ci_95_upper"]) + list(state_fc["ci_95_lower"][::-1]),
-        fill="toself",
-        fillcolor=f"rgba(14,116,144,{ci_opacity_95})",
-        line=dict(color="rgba(0,0,0,0)"),
-        name="95% Confidence Band",
-        showlegend=True,
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=list(months) + list(months[::-1]),
+            y=list(state_fc["ci_95_upper"]) + list(state_fc["ci_95_lower"][::-1]),
+            fill="toself",
+            fillcolor=f"rgba(14,116,144,{ci_opacity_95})",
+            line=dict(color="rgba(0,0,0,0)"),
+            name="95% Confidence Band",
+            showlegend=True,
+        )
+    )
 
     # 80% CI band (opacity dynamic)
-    fig.add_trace(go.Scatter(
-        x=list(months) + list(months[::-1]),
-        y=list(state_fc["ci_80_upper"]) + list(state_fc["ci_80_lower"][::-1]),
-        fill="toself",
-        fillcolor=f"rgba(14,116,144,{ci_opacity_80})",
-        line=dict(color="rgba(0,0,0,0)"),
-        name="80% Confidence Band",
-        showlegend=True,
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=list(months) + list(months[::-1]),
+            y=list(state_fc["ci_80_upper"]) + list(state_fc["ci_80_lower"][::-1]),
+            fill="toself",
+            fillcolor=f"rgba(14,116,144,{ci_opacity_80})",
+            line=dict(color="rgba(0,0,0,0)"),
+            name="80% Confidence Band",
+            showlegend=True,
+        )
+    )
 
     # Forecast mean
-    fig.add_trace(go.Scatter(
-        x=months,
-        y=state_fc["forecast_mean"],
-        mode="lines+markers",
-        name="SARIMA Forecast",
-        line=dict(color="#ea580c", width=3, dash="dash"),
-        marker=dict(size=5),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=months,
+            y=state_fc["forecast_mean"],
+            mode="lines+markers",
+            name="SARIMA Forecast",
+            line=dict(color="#ea580c", width=3, dash="dash"),
+            marker=dict(size=5),
+        )
+    )
 
     # Capacity threshold
     if model_summary is not None and not model_summary.empty:
@@ -132,7 +146,10 @@ def build_forecast_chart(
                 )
 
     fig.update_layout(
-        title=dict(text=f"{state}: 12-Month Demographic Update Demand Forecast", font=dict(size=14)),
+        title=dict(
+            text=f"{state}: 12-Month Demographic Update Demand Forecast",
+            font=dict(size=14),
+        ),
         xaxis_title="Month",
         yaxis_title="Demographic Updates",
         template="plotly_white",
@@ -147,7 +164,9 @@ def build_forecast_chart(
     return fig
 
 
-def _forecast_interpreter(state: str, model_summary: Optional[pd.DataFrame], months_to_breach) -> str:
+def _forecast_interpreter(
+    state: str, model_summary: Optional[pd.DataFrame], months_to_breach
+) -> str:
     """Generate a plain-English forecast summary for this state."""
     if model_summary is None:
         return "Model summary not available for interpretation."
@@ -156,7 +175,11 @@ def _forecast_interpreter(state: str, model_summary: Optional[pd.DataFrame], mon
     if state_ms.empty:
         return f"No model summary available for {state}."
 
-    mape = state_ms["backtest_mape"].iloc[0] if "backtest_mape" in state_ms.columns else None
+    mape = (
+        state_ms["backtest_mape"].iloc[0]
+        if "backtest_mape" in state_ms.columns
+        else None
+    )
     order = state_ms["order"].iloc[0] if "order" in state_ms.columns else "Unknown"
 
     accuracy_phrase = ""
@@ -200,13 +223,20 @@ def render_forecast_panel(state_month: pd.DataFrame) -> None:
     model_summary = _load_model_summary()
 
     if forecast_df is None or forecast_df.empty:
-        st.warning("No forecast data available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "No forecast data available. Run the advanced analytics pipeline first."
+        )
         return
 
     # ── Capacity alerts overview ──────────────────────────────────────────────
-    if model_summary is not None and not model_summary.empty and "months_to_breach" in model_summary.columns:
+    if (
+        model_summary is not None
+        and not model_summary.empty
+        and "months_to_breach" in model_summary.columns
+    ):
         breached_states = model_summary[
-            model_summary["months_to_breach"].notna() & (model_summary["months_to_breach"] > -1)
+            model_summary["months_to_breach"].notna()
+            & (model_summary["months_to_breach"] > -1)
         ].sort_values("months_to_breach")
         if not breached_states.empty:
             st.error(
@@ -214,23 +244,35 @@ def render_forecast_panel(state_month: pd.DataFrame) -> None:
                 f"to breach their capacity threshold within 12 months!"
             )
             st.dataframe(
-                breached_states[["state", "months_to_breach", "capacity_threshold"]].rename(columns={
-                    "months_to_breach": "Months to Breach",
-                    "capacity_threshold": "Capacity Limit",
-                }),
+                breached_states[
+                    ["state", "months_to_breach", "capacity_threshold"]
+                ].rename(
+                    columns={
+                        "months_to_breach": "Months to Breach",
+                        "capacity_threshold": "Capacity Limit",
+                    }
+                ),
                 width="stretch",
                 hide_index=True,
             )
         else:
-            st.success("✅ **Capacity Status**: All states are projected to stay within operational infrastructure thresholds.")
+            st.success(
+                "✅ **Capacity Status**: All states are projected to stay within operational infrastructure thresholds."
+            )
 
     # ── State selector ────────────────────────────────────────────────────────
     forecasted_states = sorted(forecast_df["state"].unique())
-    selected = st.selectbox("Select state for forecast", forecasted_states, key="forecast_state")
+    selected = st.selectbox(
+        "Select state for forecast", forecasted_states, key="forecast_state"
+    )
 
     # Months to breach for selected state
     months_to_breach = None
-    if model_summary is not None and not model_summary.empty and "months_to_breach" in model_summary.columns:
+    if (
+        model_summary is not None
+        and not model_summary.empty
+        and "months_to_breach" in model_summary.columns
+    ):
         state_ms = model_summary[model_summary["state"] == selected]
         if not state_ms.empty:
             months_to_breach = state_ms["months_to_breach"].iloc[0]
@@ -258,40 +300,83 @@ def render_forecast_panel(state_month: pd.DataFrame) -> None:
             with metric_cols[1]:
                 if "aic" in model_summary.columns:
                     median_aic = model_summary.loc[fitted_mask, "aic"].median()
-                    st.metric("Median AIC", f"{median_aic:.1f}" if pd.notna(median_aic) else "—")
+                    st.metric(
+                        "Median AIC",
+                        f"{median_aic:.1f}" if pd.notna(median_aic) else "—",
+                    )
             with metric_cols[2]:
                 if has_backtest:
-                    med_mape = model_summary.loc[fitted_mask, "backtest_mape"].dropna().median()
-                    st.metric("Median Walk-Forward MAPE", f"{med_mape:.1f}%" if pd.notna(med_mape) else "—")
+                    med_mape = (
+                        model_summary.loc[fitted_mask, "backtest_mape"]
+                        .dropna()
+                        .median()
+                    )
+                    st.metric(
+                        "Median Walk-Forward MAPE",
+                        f"{med_mape:.1f}%" if pd.notna(med_mape) else "—",
+                    )
             with metric_cols[3]:
                 if has_backtest:
-                    med_rmse = model_summary.loc[fitted_mask, "backtest_rmse"].dropna().median()
-                    st.metric("Median Walk-Forward RMSE", f"{med_rmse:,.0f}" if pd.notna(med_rmse) else "—")
+                    med_rmse = (
+                        model_summary.loc[fitted_mask, "backtest_rmse"]
+                        .dropna()
+                        .median()
+                    )
+                    st.metric(
+                        "Median Walk-Forward RMSE",
+                        f"{med_rmse:,.0f}" if pd.notna(med_rmse) else "—",
+                    )
 
-            display_cols = ["state", "n_obs", "model_fitted", "aic", "order", "months_to_breach"]
+            display_cols = [
+                "state",
+                "n_obs",
+                "model_fitted",
+                "aic",
+                "order",
+                "months_to_breach",
+            ]
             if has_backtest:
                 display_cols += ["backtest_mape", "backtest_rmse", "backtest_mae"]
             available = [c for c in display_cols if c in model_summary.columns]
             rename_map = {
-                "n_obs": "Obs", "model_fitted": "Fitted", "aic": "AIC",
-                "order": "ARIMA Order", "months_to_breach": "Months to Breach",
-                "backtest_mape": "MAPE (%)", "backtest_rmse": "RMSE", "backtest_mae": "MAE",
+                "n_obs": "Obs",
+                "model_fitted": "Fitted",
+                "aic": "AIC",
+                "order": "ARIMA Order",
+                "months_to_breach": "Months to Breach",
+                "backtest_mape": "MAPE (%)",
+                "backtest_rmse": "RMSE",
+                "backtest_mae": "MAE",
             }
             display_df = model_summary[available].copy()
             for col in ["aic", "backtest_mape", "backtest_rmse", "backtest_mae"]:
                 if col in display_df.columns:
                     display_df[col] = display_df[col].round(2)
             st.dataframe(
-                display_df.rename(columns=rename_map).sort_values("AIC" if "AIC" in display_df.rename(columns=rename_map).columns else display_df.columns[0], na_position="last"),
-                width="stretch", hide_index=True,
+                display_df.rename(columns=rename_map).sort_values(
+                    (
+                        "AIC"
+                        if "AIC" in display_df.rename(columns=rename_map).columns
+                        else display_df.columns[0]
+                    ),
+                    na_position="last",
+                ),
+                width="stretch",
+                hide_index=True,
             )
 
             if has_backtest:
-                valid_bt = model_summary.loc[fitted_mask].dropna(subset=["backtest_mape"])
+                valid_bt = model_summary.loc[fitted_mask].dropna(
+                    subset=["backtest_mape"]
+                )
                 if len(valid_bt) >= 2:
                     sp_left, sp_right = st.columns(2)
-                    best = valid_bt.nsmallest(3, "backtest_mape")[["state", "backtest_mape", "backtest_rmse"]]
-                    worst = valid_bt.nlargest(3, "backtest_mape")[["state", "backtest_mape", "backtest_rmse"]]
+                    best = valid_bt.nsmallest(3, "backtest_mape")[
+                        ["state", "backtest_mape", "backtest_rmse"]
+                    ]
+                    worst = valid_bt.nlargest(3, "backtest_mape")[
+                        ["state", "backtest_mape", "backtest_rmse"]
+                    ]
                     with sp_left:
                         st.markdown("🟢 **Most Accurate Forecasts** (lowest MAPE)")
                         best.columns = ["State", "MAPE (%)", "RMSE"]

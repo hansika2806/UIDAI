@@ -28,7 +28,6 @@ from components.layout import (
 )
 from components.forecast_panel import render_forecast_panel
 from components.cluster_panel import render_cluster_panel
-from components.causal_panel import render_causal_panel
 from components.shap_panel import render_shap_panel
 from components.simulator_panel import render_simulator_panel
 
@@ -102,6 +101,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 # ── Risk classification helpers ───────────────────────────────────────────────
 def _risk_level(state: str, state_master: pd.DataFrame) -> tuple[str, str, str]:
     """Return (level_label, css_class, dot_color) for the state's risk."""
@@ -130,7 +130,9 @@ def render_alert_banner(
     if os.path.exists(model_summary_path):
         ms = pd.read_csv(model_summary_path)
         if "months_to_breach" in ms.columns:
-            breached = ms[ms["months_to_breach"].notna() & (ms["months_to_breach"] > -1)]
+            breached = ms[
+                ms["months_to_breach"].notna() & (ms["months_to_breach"] > -1)
+            ]
             if not breached.empty:
                 earliest = int(breached["months_to_breach"].min())
                 alerts.append(
@@ -149,7 +151,11 @@ def render_alert_banner(
 
     # Stress category alert
     if not state_master.empty and "Policy_Category" in state_master.columns:
-        stress_count = int(state_master["Policy_Category"].str.contains("Maintenance Stress", na=False).sum())
+        stress_count = int(
+            state_master["Policy_Category"]
+            .str.contains("Maintenance Stress", na=False)
+            .sum()
+        )
         if stress_count > 0:
             alerts.append(
                 f"📊 <strong>{stress_count} state(s)</strong> are classified under High Maintenance Stress — "
@@ -217,7 +223,9 @@ def filter_precomputed_outputs(
 
     state_master = filtered["state_master_full"].copy()
     if "Total_Activity" in state_master.columns:
-        pareto = state_master.sort_values("Total_Activity", ascending=False).reset_index(drop=True)
+        pareto = state_master.sort_values(
+            "Total_Activity", ascending=False
+        ).reset_index(drop=True)
         pareto["activity_rank"] = range(1, len(pareto) + 1)
         total_activity = pareto["Total_Activity"].sum()
         pareto["cum_share"] = (
@@ -489,8 +497,12 @@ selected_state = st.sidebar.selectbox(
 # Sidebar risk card
 risk_label, risk_css, risk_dot_color = _risk_level(selected_state, state_master)
 _state_row = state_master[state_master["state"] == selected_state]
-_policy_cat = str(_state_row["Policy_Category"].iloc[0]) if not _state_row.empty else "—"
-_policy_action = str(_state_row["Policy_Action"].iloc[0]) if not _state_row.empty else "—"
+_policy_cat = (
+    str(_state_row["Policy_Category"].iloc[0]) if not _state_row.empty else "—"
+)
+_policy_action = (
+    str(_state_row["Policy_Action"].iloc[0]) if not _state_row.empty else "—"
+)
 st.sidebar.markdown(
     f"""
     <div class="sidebar-risk-card {risk_css}">

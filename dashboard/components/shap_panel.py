@@ -45,7 +45,11 @@ def _load_feature_importance():
 
 def _readable(feature_code: str) -> str:
     """Convert a raw feature name to a human-readable label."""
-    return FEATURE_NAME_MAP.get(str(feature_code), str(feature_code)) if pd.notna(feature_code) else "N/A"
+    return (
+        FEATURE_NAME_MAP.get(str(feature_code), str(feature_code))
+        if pd.notna(feature_code)
+        else "N/A"
+    )
 
 
 def _shap_interpreter(row: pd.Series) -> str:
@@ -84,7 +88,9 @@ def _shap_interpreter(row: pd.Series) -> str:
 
     priority_context = ""
     if predicted >= 0.55:
-        priority_context = " This state requires <strong>active policy attention</strong>."
+        priority_context = (
+            " This state requires <strong>active policy attention</strong>."
+        )
     elif predicted <= 0.35:
         priority_context = " This state is currently in a <strong>lower-priority zone</strong> — but may need monitoring for emerging risks."
 
@@ -99,7 +105,7 @@ def render_shap_panel() -> None:
     )
     st.markdown(
         '<div class="interpret-box" style="margin-top:0;">'
-        '<strong>SHAP (SHapley Additive exPlanations)</strong> uses game theory to decompose '
+        "<strong>SHAP (SHapley Additive exPlanations)</strong> uses game theory to decompose "
         "the contributions of various raw metrics to the composite <strong>Priority Score</strong>. "
         "This explains <em>why</em> a particular state is flagged for attention, not just the score itself."
         "</div>",
@@ -110,7 +116,9 @@ def render_shap_panel() -> None:
     feat_imp = _load_feature_importance()
 
     if shap_summary is None or feat_imp is None:
-        st.warning("SHAP explanation data not available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "SHAP explanation data not available. Run the advanced analytics pipeline first."
+        )
         return
 
     # ── Two columns: global importance (left) + waterfall (right) ────────────
@@ -124,7 +132,9 @@ def render_shap_panel() -> None:
 
         display_feat = feat_imp.copy()
         display_feat["feature_readable"] = (
-            display_feat["feature"].map(FEATURE_NAME_MAP).fillna(display_feat["feature"])
+            display_feat["feature"]
+            .map(FEATURE_NAME_MAP)
+            .fillna(display_feat["feature"])
         )
 
         fig_imp = px.bar(
@@ -153,7 +163,9 @@ def render_shap_panel() -> None:
     with right:
         st.markdown("### State-Level Waterfall Explanation")
         all_states = sorted(shap_summary["state"].unique())
-        selected_state = st.selectbox("Select State to Explain:", all_states, key="shap_state_select")
+        selected_state = st.selectbox(
+            "Select State to Explain:", all_states, key="shap_state_select"
+        )
 
         row = shap_summary[shap_summary["state"] == selected_state].iloc[0]
         predicted_val = row["predicted_priority"]
@@ -224,15 +236,30 @@ def render_shap_panel() -> None:
             display_summary[col] = (
                 display_summary[col].map(FEATURE_NAME_MAP).fillna(display_summary[col])
             )
-        for col in ["predicted_priority", "expected_value", "shap_sum", "top_1_shap", "top_2_shap", "top_3_shap"]:
+        for col in [
+            "predicted_priority",
+            "expected_value",
+            "shap_sum",
+            "top_1_shap",
+            "top_2_shap",
+            "top_3_shap",
+        ]:
             if col in display_summary.columns:
                 display_summary[col] = display_summary[col].round(4)
 
         st.dataframe(
-            display_summary[[
-                "state", "predicted_priority", "expected_value", "shap_sum",
-                "top_1_feature", "top_1_shap", "top_2_feature", "top_2_shap",
-            ]],
+            display_summary[
+                [
+                    "state",
+                    "predicted_priority",
+                    "expected_value",
+                    "shap_sum",
+                    "top_1_feature",
+                    "top_1_shap",
+                    "top_2_feature",
+                    "top_2_shap",
+                ]
+            ],
             width="stretch",
             hide_index=True,
         )

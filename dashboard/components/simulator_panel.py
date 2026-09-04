@@ -158,7 +158,9 @@ def _diminishing(lever_pct: float, max_effect: float, k: float = 3.0) -> float:
     return max_effect * (1.0 - np.exp(-k * lever_pct / 100.0))
 
 
-def compute_indicator_deltas(levers: Dict[str, float], baseline: Dict[str, float]) -> Dict[str, float]:
+def compute_indicator_deltas(
+    levers: Dict[str, float], baseline: Dict[str, float]
+) -> Dict[str, float]:
     """Map lever values to projected indicator changes, dynamically scaled by baseline state sensitivities."""
     ed = levers.get("enrollment_drive", 0)
     fw = levers.get("fee_waiver", 0)
@@ -171,15 +173,15 @@ def compute_indicator_deltas(levers: Dict[str, float], baseline: Dict[str, float
     # 1. Enrollment drives have high impact in low-maturity states, but diminishing returns in highly mature states.
     ami_base = baseline.get("AMI", 0.5)
     enrollment_sensitivity = max(0.1, 1.2 - ami_base)  # Higher impact if AMI is low
-    
+
     # 2. Fee waivers and mobile linkages have larger impacts in states with low/moderate update propensity (UPI).
     upi_base = baseline.get("UPI", 0.5)
     update_sensitivity = max(0.2, 1.3 - upi_base)
-    
+
     # 3. Infrastructure expansion has more impact on stabilizing volume stress (VSI) in high-stress states.
     vsi_base = baseline.get("VSI", 0.5)
     infra_sensitivity = max(0.3, 0.5 + vsi_base)
-    
+
     # 4. Seasonal uniformity effort (TPS) has more stabilization potential in erratic (low TPS) states.
     tps_base = baseline.get("TPS", 0.5)
     temporal_sensitivity = max(0.2, 1.2 - tps_base)
@@ -197,7 +199,7 @@ def compute_indicator_deltas(levers: Dict[str, float], baseline: Dict[str, float
         + _diminishing(ot, max_effect=0.05, k=2.5) * update_sensitivity
     )
     delta_TPS = _diminishing(su, max_effect=0.20, k=2.5) * temporal_sensitivity
-    
+
     demand_multiplier = 1.0 + (
         _diminishing(ed, max_effect=0.25, k=2.0) * enrollment_sensitivity
         + _diminishing(fw, max_effect=0.10, k=2.0) * update_sensitivity
@@ -208,8 +210,12 @@ def compute_indicator_deltas(levers: Dict[str, float], baseline: Dict[str, float
     return {
         "delta_AMI": round(delta_AMI, 4),
         "delta_UPI": round(delta_UPI, 4),
-        "delta_VSI": round(-delta_VSI, 4),  # Note: Stabilizing infrastructure / training should REDUCE volume stress (VSI)
-        "delta_TPS": round(delta_TPS, 4),   # Smoothing seasonality INCREASES temporal predictability
+        "delta_VSI": round(
+            -delta_VSI, 4
+        ),  # Note: Stabilizing infrastructure / training should REDUCE volume stress (VSI)
+        "delta_TPS": round(
+            delta_TPS, 4
+        ),  # Smoothing seasonality INCREASES temporal predictability
         "demand_multiplier": round(demand_multiplier, 4),
     }
 
@@ -301,7 +307,9 @@ def _demand_forecast_chart(
 
     # --- Precomputed SARIMA baseline (the "do-nothing" trajectory) ---
     if forecast_df is not None:
-        state_fc = forecast_df[forecast_df["state"] == selected_state].sort_values("forecast_step")
+        state_fc = forecast_df[forecast_df["state"] == selected_state].sort_values(
+            "forecast_step"
+        )
         if not state_fc.empty:
             months = state_fc["forecast_month"].astype(str).tolist()
             fc_mean = state_fc["forecast_mean"].values
@@ -405,12 +413,18 @@ def _demand_forecast_chart(
     if error_msg:
         fig.add_annotation(
             text=error_msg,
-            xref="paper", yref="paper", x=0.5, y=0.5,
-            showarrow=False, font=dict(size=13, color=SLATE),
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            showarrow=False,
+            font=dict(size=13, color=SLATE),
         )
 
     fig.update_layout(
-        title=dict(text=f"12-Month Demand Forecast — {selected_state}", font=dict(size=14)),
+        title=dict(
+            text=f"12-Month Demand Forecast — {selected_state}", font=dict(size=14)
+        ),
         xaxis_title="Month",
         yaxis_title="Demographic Updates",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
@@ -555,15 +569,17 @@ def render_simulator_panel(
 
     st.markdown(
         f'<div class="interpret-box" style="margin-bottom:1rem;">'
-        f'<strong>Recommended Action for {selected_state}:</strong><br>'
+        f"<strong>Recommended Action for {selected_state}:</strong><br>"
         f'<em style="color:#0e7490;">{policy_action}</em>'
-        f'</div>',
+        f"</div>",
         unsafe_allow_html=True,
     )
 
     with col_apply:
         st.markdown("<br>", unsafe_allow_html=True)
-        apply_preset = st.button("⚡ Apply Suggested Intervention", key="sim_apply_preset_btn")
+        apply_preset = st.button(
+            "⚡ Apply Suggested Intervention", key="sim_apply_preset_btn"
+        )
 
     if apply_preset:
         preset = PRESET_LEVERS.get(policy_action, {})
@@ -578,8 +594,10 @@ def render_simulator_panel(
 
     for i, (key_name, cfg) in enumerate(LEVERS.items()):
         with lever_cols[i % 3]:
-            default_val = cfg["min"] if reset else int(
-                st.session_state.get(f"sim_lever_{key_name}", cfg["default"])
+            default_val = (
+                cfg["min"]
+                if reset
+                else int(st.session_state.get(f"sim_lever_{key_name}", cfg["default"]))
             )
             lever_vals[key_name] = st.slider(
                 label=cfg["label"],
@@ -607,7 +625,9 @@ def render_simulator_panel(
     st.markdown("### 📊 Projected Impact on Governance Indices")
 
     if not any_lever_active:
-        st.info("👆 Move the sliders above — or click **Apply Suggested Intervention** — to simulate a policy change.")
+        st.info(
+            "👆 Move the sliders above — or click **Apply Suggested Intervention** — to simulate a policy change."
+        )
 
     banner_cols = st.columns(4)
     indicators_display = [
@@ -621,11 +641,23 @@ def render_simulator_panel(
             delta_val = simulated[ind] - baseline[ind]
             if ind == "VSI":
                 # Volume Stress decrease (negative delta) is an improvement (green)
-                arrow = "▼" if delta_val < -0.001 else ("▲" if delta_val > 0.001 else "→")
-                arrow_color = GREEN if delta_val < -0.001 else (RED if delta_val > 0.001 else SLATE)
+                arrow = (
+                    "▼" if delta_val < -0.001 else ("▲" if delta_val > 0.001 else "→")
+                )
+                arrow_color = (
+                    GREEN
+                    if delta_val < -0.001
+                    else (RED if delta_val > 0.001 else SLATE)
+                )
             else:
-                arrow = "▲" if delta_val > 0.001 else ("▼" if delta_val < -0.001 else "→")
-                arrow_color = GREEN if delta_val > 0.001 else (RED if delta_val < -0.001 else SLATE)
+                arrow = (
+                    "▲" if delta_val > 0.001 else ("▼" if delta_val < -0.001 else "→")
+                )
+                arrow_color = (
+                    GREEN
+                    if delta_val > 0.001
+                    else (RED if delta_val < -0.001 else SLATE)
+                )
             interp = _index_interpretation(ind, simulated[ind])
             st.markdown(
                 f"""
@@ -680,7 +712,9 @@ def render_simulator_panel(
 
     # ── Simulation Interpreter ────────────────────────────────────────────────
     if any_lever_active:
-        net_delta = sum(simulated[k] - baseline[k] for k in ["AMI", "UPI", "VSI", "TPS"])
+        net_delta = sum(
+            simulated[k] - baseline[k] for k in ["AMI", "UPI", "VSI", "TPS"]
+        )
         direction = "improvement" if net_delta > 0 else "decline"
         demand_change_pct = (demand_multiplier - 1.0) * 100
 
@@ -714,25 +748,38 @@ def render_simulator_panel(
             for key_name, cfg in LEVERS.items():
                 val = lever_vals[key_name]
                 if val > 0:
-                    rows.append({
-                        "Policy Lever": cfg["label"].replace("📋 ", "").replace("💸 ", "")
-                            .replace("📱 ", "").replace("🏗️ ", "").replace("🎓 ", "").replace("📅 ", ""),
-                        "Value": f"{val}{cfg['unit']}",
-                        "Status": "Active ✅",
-                    })
+                    rows.append(
+                        {
+                            "Policy Lever": cfg["label"]
+                            .replace("📋 ", "")
+                            .replace("💸 ", "")
+                            .replace("📱 ", "")
+                            .replace("🏗️ ", "")
+                            .replace("🎓 ", "")
+                            .replace("📅 ", ""),
+                            "Value": f"{val}{cfg['unit']}",
+                            "Status": "Active ✅",
+                        }
+                    )
             if rows:
                 st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
             impact_rows = []
             for ind in ["AMI", "UPI", "VSI", "TPS"]:
                 delta = simulated[ind] - baseline[ind]
-                impact_rows.append({
-                    "Indicator": ind,
-                    "Baseline": f"{baseline[ind]:.4f}",
-                    "Simulated": f"{simulated[ind]:.4f}",
-                    "Delta": f"{delta:+.4f}",
-                    "Direction": "↑ Improvement" if delta > 0.001 else ("↓ Decline" if delta < -0.001 else "→ No Change"),
-                })
+                impact_rows.append(
+                    {
+                        "Indicator": ind,
+                        "Baseline": f"{baseline[ind]:.4f}",
+                        "Simulated": f"{simulated[ind]:.4f}",
+                        "Delta": f"{delta:+.4f}",
+                        "Direction": (
+                            "↑ Improvement"
+                            if delta > 0.001
+                            else ("↓ Decline" if delta < -0.001 else "→ No Change")
+                        ),
+                    }
+                )
             st.dataframe(pd.DataFrame(impact_rows), width="stretch", hide_index=True)
 
     st.markdown(

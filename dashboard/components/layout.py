@@ -17,7 +17,6 @@ from components.charts import (
     build_peer_comparison,
     build_state_ratio_trend_chart,
 )
-from components.metrics import metric_card
 
 
 # ── Index interpretation helper ───────────────────────────────────────────────
@@ -67,7 +66,7 @@ def _percentile_badge(value: float, all_values: pd.Series) -> str:
         label = f"Bottom {pct + 1}%"
     return (
         f'<span style="font-size:0.72rem;font-weight:500;background:rgba(0,0,0,0.04);'
-        f'color:{color};padding:0.15rem 0.45rem;border-radius:9999px;'
+        f"color:{color};padding:0.15rem 0.45rem;border-radius:9999px;"
         f'border:1px solid {color};margin-left:0.4rem;vertical-align:middle;">{label}</span>'
     )
 
@@ -109,8 +108,11 @@ def render_executive_overview(
     with right:
         st.markdown("#### Priority States")
         preview_cols = [
-            "state", "Priority_Score", "Governance_Status",
-            "Policy_Action", "Anomaly_Flag_Count",
+            "state",
+            "Priority_Score",
+            "Governance_Status",
+            "Policy_Action",
+            "Anomaly_Flag_Count",
         ]
         st.dataframe(
             anomalies[preview_cols].head(12),
@@ -122,7 +124,9 @@ def render_executive_overview(
 def render_governance_diagnostics(
     state_master: pd.DataFrame, selected_state: str, outputs: dict
 ) -> None:
-    st.markdown('<div class="headline">📐 Governance Diagnostics</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="headline">📐 Governance Diagnostics</div>', unsafe_allow_html=True
+    )
     st.plotly_chart(build_quadrant_chart(state_master, selected_state), width="stretch")
     left, right = st.columns(2)
     with left:
@@ -148,7 +152,10 @@ def render_governance_diagnostics(
 def render_lifecycle_operations(
     national: pd.DataFrame, state_master: pd.DataFrame, outputs: dict
 ) -> None:
-    st.markdown('<div class="headline">⚙️ Lifecycle &amp; Operations</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="headline">⚙️ Lifecycle &amp; Operations</div>',
+        unsafe_allow_html=True,
+    )
     left, right = st.columns([1.35, 1])
     with left:
         st.plotly_chart(build_ratio_trend_chart(national), width="stretch")
@@ -161,13 +168,18 @@ def render_lifecycle_operations(
     with right:
         activity_corr = outputs["activity_correlation_matrix"]
         st.plotly_chart(
-            build_indicator_heatmap(activity_corr, "Activity and Lifecycle Correlations"),
+            build_indicator_heatmap(
+                activity_corr, "Activity and Lifecycle Correlations"
+            ),
             width="stretch",
         )
 
 
 def render_anomalies_risk(anomalies: pd.DataFrame) -> None:
-    st.markdown('<div class="headline">🚨 Anomalies &amp; Risk Detection</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="headline">🚨 Anomalies &amp; Risk Detection</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         '<div class="interpret-box" style="margin-top:0; line-height:1.65;">'
         "<strong>Consensus Ensemble Anomaly Detection</strong>: Combining ECOD and Isolation Forest models.<br>"
@@ -185,9 +197,14 @@ def render_anomalies_risk(anomalies: pd.DataFrame) -> None:
     left, right = st.columns([1.2, 1])
     with left:
         flag_cols = [
-            "state", "Anomaly_Flag_Count", "Anomaly_High_Stress",
-            "Anomaly_Pressure_Mismatch", "Anomaly_Scale_Volatility",
-            "Anomaly_Governance_Outlier", "Volatility_Excess", "Governance_Distance",
+            "state",
+            "Anomaly_Flag_Count",
+            "Anomaly_High_Stress",
+            "Anomaly_Pressure_Mismatch",
+            "Anomaly_Scale_Volatility",
+            "Anomaly_Governance_Outlier",
+            "Volatility_Excess",
+            "Governance_Distance",
         ]
         st.dataframe(
             anomalies[flag_cols].sort_values("Anomaly_Flag_Count", ascending=False),
@@ -197,7 +214,9 @@ def render_anomalies_risk(anomalies: pd.DataFrame) -> None:
     with right:
         pressure_mismatch = anomalies[anomalies["Anomaly_Pressure_Mismatch"]]
         if pressure_mismatch.empty:
-            st.info("No pressure-maturity mismatch states under the active filter window.")
+            st.info(
+                "No pressure-maturity mismatch states under the active filter window."
+            )
         else:
             st.plotly_chart(
                 build_mismatch_queue_chart(pressure_mismatch),
@@ -231,7 +250,7 @@ def render_state_drilldown(
         f'{state_row["Governance_Status"]} &nbsp;·&nbsp; '
         f'{state_row["Policy_Category"]} &nbsp;·&nbsp; '
         f'Priority score <strong>{state_row["Priority_Score"]:.3f}</strong>'
-        f'</div>',
+        f"</div>",
         unsafe_allow_html=True,
     )
 
@@ -297,7 +316,10 @@ def render_data_export(
     pareto: pd.DataFrame,
     outputs: dict,
 ) -> None:
-    st.markdown('<div class="headline">📦 Download Analytical Outputs</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="headline">📦 Download Analytical Outputs</div>',
+        unsafe_allow_html=True,
+    )
     export_map = {
         "State Master": state_master,
         "State Month Master": state_month,

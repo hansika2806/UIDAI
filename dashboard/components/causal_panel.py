@@ -55,7 +55,6 @@ def _load_cusum_results():
 
 def _build_causal_flow_chart(state_granger: pd.DataFrame) -> go.Figure:
     """Build a Plotly flowchart showing Granger causal links with hover stats."""
-    sig = state_granger[state_granger["significant"] == True]
     all_tests = state_granger.copy()
 
     # Nodes: 3 variables at fixed positions
@@ -67,16 +66,19 @@ def _build_causal_flow_chart(state_granger: pd.DataFrame) -> go.Figure:
 
     # Background node circles
     for i, (lbl, x, y) in enumerate(zip(node_labels, node_x, node_y)):
-        fig.add_trace(go.Scatter(
-            x=[x], y=[y],
-            mode="markers+text",
-            marker=dict(size=55, color="#102a43", opacity=0.9),
-            text=[lbl],
-            textposition="middle center",
-            textfont=dict(color="white", size=10, family="Inter, sans-serif"),
-            hoverinfo="skip",
-            showlegend=False,
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=[x],
+                y=[y],
+                mode="markers+text",
+                marker=dict(size=55, color="#102a43", opacity=0.9),
+                text=[lbl],
+                textposition="middle center",
+                textfont=dict(color="white", size=10, family="Inter, sans-serif"),
+                hoverinfo="skip",
+                showlegend=False,
+            )
+        )
 
     var_index = {
         "Enrollment": 0,
@@ -112,29 +114,34 @@ def _build_causal_flow_chart(state_granger: pd.DataFrame) -> go.Figure:
         line_width = 3.5 if is_sig else 1.5
         line_dash = "solid" if is_sig else "dot"
 
-        fig.add_trace(go.Scatter(
-            x=[x0, mx, x1],
-            y=[y0, my, y1],
-            mode="lines",
-            line=dict(color=line_color, width=line_width, dash=line_dash),
-            hoverinfo="text",
-            hovertext=hover_text,
-            showlegend=False,
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=[x0, mx, x1],
+                y=[y0, my, y1],
+                mode="lines",
+                line=dict(color=line_color, width=line_width, dash=line_dash),
+                hoverinfo="text",
+                hovertext=hover_text,
+                showlegend=False,
+            )
+        )
 
         # Arrowhead indicator (midpoint marker)
         label_txt = "✓" if is_sig else "✗"
-        fig.add_trace(go.Scatter(
-            x=[mx], y=[my],
-            mode="markers+text",
-            marker=dict(size=18, color=line_color, symbol="circle"),
-            text=[label_txt],
-            textfont=dict(color="white", size=11),
-            textposition="middle center",
-            hoverinfo="text",
-            hovertext=hover_text,
-            showlegend=False,
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=[mx],
+                y=[my],
+                mode="markers+text",
+                marker=dict(size=18, color=line_color, symbol="circle"),
+                text=[label_txt],
+                textfont=dict(color="white", size=11),
+                textposition="middle center",
+                hoverinfo="text",
+                hovertext=hover_text,
+                showlegend=False,
+            )
+        )
 
     fig.update_layout(
         title="Granger Causality Network (hover for F-statistic & p-value)",
@@ -151,7 +158,7 @@ def _build_causal_flow_chart(state_granger: pd.DataFrame) -> go.Figure:
 
 def _causal_interpreter(state_granger: pd.DataFrame) -> str:
     """Generate dynamic Granger causality interpretation based on significant links."""
-    sig = state_granger[state_granger["significant"] == True]
+    sig = state_granger[state_granger["significant"]]
     disclaimer = (
         "<div style='font-size:0.78rem;color:#64748b;margin-top:0.6rem;"
         "border-top:1px dashed rgba(14,116,144,0.15);padding-top:0.5rem;line-height:1.4;'>"
@@ -187,10 +194,15 @@ def _causal_interpreter(state_granger: pd.DataFrame) -> str:
             )
 
     if not lines:
-        return "Significant links detected but no standard interpretation available for this pair." + disclaimer
+        return (
+            "Significant links detected but no standard interpretation available for this pair."
+            + disclaimer
+        )
 
-    intro = f"<strong>{len(seen_pairs)} significant causal link(s) detected:</strong><br>"
-    body = "<br><br>".join(f"• {l}" for l in lines)
+    intro = (
+        f"<strong>{len(seen_pairs)} significant causal link(s) detected:</strong><br>"
+    )
+    body = "<br><br>".join(f"• {line}" for line in lines)
     return intro + body + disclaimer
 
 
@@ -214,7 +226,9 @@ def render_causal_panel() -> None:
     cusum = _load_cusum_results()
 
     if granger is None or cusum is None:
-        st.warning("Causal inference data not available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "Causal inference data not available. Run the advanced analytics pipeline first."
+        )
         return
 
     # ── Stationarity banner ───────────────────────────────────────────────────
@@ -229,17 +243,31 @@ def render_causal_panel() -> None:
             )
 
     # ── High-level metrics ────────────────────────────────────────────────────
-    sig_granger = granger[granger["significant"] == True]
-    breaks = cusum[cusum["break_detected"] == True]
-    most_common_break = breaks["break_month"].mode().iloc[0] if not breaks.empty else "N/A"
+    sig_granger = granger[granger["significant"]]
+    breaks = cusum[cusum["break_detected"]]
+    most_common_break = (
+        breaks["break_month"].mode().iloc[0] if not breaks.empty else "N/A"
+    )
 
     cols = st.columns(3)
     with cols[0]:
-        st.metric("Significant Causal Links", f"{len(sig_granger)} / {len(granger.drop_duplicates(['state','cause','effect','lag']))}", help="Granger causality p-value < 0.05")
+        st.metric(
+            "Significant Causal Links",
+            f"{len(sig_granger)} / {len(granger.drop_duplicates(['state','cause','effect','lag']))}",
+            help="Granger causality p-value < 0.05",
+        )
     with cols[1]:
-        st.metric("Regime Shifts Detected", f"{len(breaks)} / {len(cusum)}", help="States with CUSUM break detected")
+        st.metric(
+            "Regime Shifts Detected",
+            f"{len(breaks)} / {len(cusum)}",
+            help="States with CUSUM break detected",
+        )
     with cols[2]:
-        st.metric("Peak Shift Month", most_common_break, help="Month with most structural breaks clustered")
+        st.metric(
+            "Peak Shift Month",
+            most_common_break,
+            help="Month with most structural breaks clustered",
+        )
 
     # ── Summary overview charts ───────────────────────────────────────────────
     left, right = st.columns([1, 1])
@@ -247,7 +275,7 @@ def render_causal_panel() -> None:
     with left:
         st.markdown("### Granger Causality Overview")
         summary_granger = (
-            granger[granger["significant"] == True]
+            granger[granger["significant"]]
             .groupby(["cause", "effect"])
             .size()
             .reset_index(name="count")
@@ -267,7 +295,9 @@ def render_causal_panel() -> None:
             fig_granger.update_layout(
                 height=360,
                 margin=dict(l=10, r=20, t=50, b=20),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                legend=dict(
+                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+                ),
                 xaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.2)"),
                 yaxis=dict(showgrid=False),
             )
@@ -307,7 +337,11 @@ def render_causal_panel() -> None:
     st.markdown("---")
     st.markdown("### 🔍 State-Level Causal Deep Dive")
     all_states = sorted(granger["state"].unique())
-    selected_state = st.selectbox("Select State to Inspect Causal Dynamics:", all_states, key="causal_state_select")
+    selected_state = st.selectbox(
+        "Select State to Inspect Causal Dynamics:",
+        all_states,
+        key="causal_state_select",
+    )
 
     state_granger = granger[granger["state"] == selected_state]
 
@@ -352,7 +386,9 @@ def render_causal_panel() -> None:
     # Technical table behind expander
     with st.expander("Show full Granger causality table for this state"):
         display_granger = state_granger.copy()
-        display_granger["Significant?"] = display_granger["significant"].map({True: "✅ Yes", False: "❌ No"})
+        display_granger["Significant?"] = display_granger["significant"].map(
+            {True: "✅ Yes", False: "❌ No"}
+        )
         display_granger["p-value"] = display_granger["p_value"].apply(
             lambda x: f"{x:.4f}" if pd.notna(x) else "N/A"
         )

@@ -64,7 +64,9 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
         return go.Figure().update_layout(title="UMAP projection not available")
 
     plot_df = clustered.copy()
-    plot_df["Mahalanobis_Distance"] = plot_df["Mahalanobis_Distance"].astype(float).tolist()
+    plot_df["Mahalanobis_Distance"] = (
+        plot_df["Mahalanobis_Distance"].astype(float).tolist()
+    )
 
     # Color map aligned to cluster profiles
     color_map = {}
@@ -79,7 +81,13 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
         size="Mahalanobis_Distance",
         size_max=40,
         hover_name="state",
-        hover_data={"AMI": ":.3f", "UPI": ":.3f", "VSI": ":.3f", "TPS": ":.3f", "Mahalanobis_Distance": ":.2f"},
+        hover_data={
+            "AMI": ":.3f",
+            "UPI": ":.3f",
+            "VSI": ":.3f",
+            "TPS": ":.3f",
+            "Mahalanobis_Distance": ":.2f",
+        },
         color_discrete_map=color_map,
         template="plotly_white",
         title="UMAP Projection of Governance Indicator Space",
@@ -88,8 +96,12 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
         height=500,
         margin=dict(l=20, r=20, t=60, b=20),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        xaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.2)", title="UMAP Dimension 1"),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.2)", title="UMAP Dimension 2"),
+        xaxis=dict(
+            showgrid=True, gridcolor="rgba(148,163,184,0.2)", title="UMAP Dimension 1"
+        ),
+        yaxis=dict(
+            showgrid=True, gridcolor="rgba(148,163,184,0.2)", title="UMAP Dimension 2"
+        ),
         paper_bgcolor="rgba(255,255,255,0.92)",
         font=dict(family="Inter, Segoe UI, sans-serif", size=12),
     )
@@ -99,29 +111,43 @@ def build_umap_chart(clustered: pd.DataFrame) -> go.Figure:
 def build_bic_chart(bic_df: pd.DataFrame) -> go.Figure:
     """BIC/AIC/AICc model selection chart."""
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=bic_df["K"], y=bic_df["BIC"],
-        mode="lines+markers", name="BIC",
-        line=dict(color="#102a43", width=3),
-    ))
-    fig.add_trace(go.Scatter(
-        x=bic_df["K"], y=bic_df["AIC"],
-        mode="lines+markers", name="AIC",
-        line=dict(color="#0e7490", width=2, dash="dash"),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=bic_df["K"],
+            y=bic_df["BIC"],
+            mode="lines+markers",
+            name="BIC",
+            line=dict(color="#102a43", width=3),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=bic_df["K"],
+            y=bic_df["AIC"],
+            mode="lines+markers",
+            name="AIC",
+            line=dict(color="#0e7490", width=2, dash="dash"),
+        )
+    )
 
     if "AICc" in bic_df.columns:
-        fig.add_trace(go.Scatter(
-            x=bic_df["K"], y=bic_df["AICc"],
-            mode="lines+markers", name="AICc (Selected)",
-            line=dict(color="#d97706", width=2.5, dash="dashdot"),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=bic_df["K"],
+                y=bic_df["AICc"],
+                mode="lines+markers",
+                name="AICc (Selected)",
+                line=dict(color="#d97706", width=2.5, dash="dashdot"),
+            )
+        )
         optimal_k = int(bic_df.loc[bic_df["AICc"].idxmin(), "K"])
     else:
         optimal_k = int(bic_df.loc[bic_df["BIC"].idxmin(), "K"])
 
     fig.add_vline(
-        x=optimal_k, line_dash="dot", line_color="#ea580c",
+        x=optimal_k,
+        line_dash="dot",
+        line_color="#ea580c",
         annotation_text=f"Optimal K={optimal_k}",
         annotation_font_color="#ea580c",
     )
@@ -191,7 +217,9 @@ def render_cluster_panel() -> None:
     centroids = _load_centroids()
 
     if clustered is None:
-        st.warning("Clustering data not available. Run the advanced analytics pipeline first.")
+        st.warning(
+            "Clustering data not available. Run the advanced analytics pipeline first."
+        )
         return
 
     # ── UMAP projection ───────────────────────────────────────────────────────
@@ -204,12 +232,19 @@ def render_cluster_panel() -> None:
         cluster_cols = st.columns(len(unique_clusters))
         for i, cluster_id in enumerate(unique_clusters):
             cluster_states = clustered[clustered["GMM_Cluster"] == cluster_id]
-            profile = CLUSTER_PROFILES.get(int(cluster_id), {
-                "name": f"Cluster {int(cluster_id)}",
-                "color": "#475569",
-                "interpreter": "No description available.",
-            })
-            med_mahal = cluster_states["Mahalanobis_Distance"].median() if "Mahalanobis_Distance" in cluster_states else 0
+            profile = CLUSTER_PROFILES.get(
+                int(cluster_id),
+                {
+                    "name": f"Cluster {int(cluster_id)}",
+                    "color": "#475569",
+                    "interpreter": "No description available.",
+                },
+            )
+            med_mahal = (
+                cluster_states["Mahalanobis_Distance"].median()
+                if "Mahalanobis_Distance" in cluster_states
+                else 0
+            )
             with cluster_cols[i]:
                 st.markdown(
                     f"""
@@ -232,31 +267,42 @@ def render_cluster_panel() -> None:
     # ── State selector for individual profile interpretation ──────────────────
     st.markdown("### State-Level Cluster Interpretation")
     all_states = sorted(clustered["state"].unique())
-    sel_state = st.selectbox("Select state for cluster interpretation:", all_states, key="cluster_state_select")
+    sel_state = st.selectbox(
+        "Select state for cluster interpretation:",
+        all_states,
+        key="cluster_state_select",
+    )
     state_cluster_row = clustered[clustered["state"] == sel_state]
 
     if not state_cluster_row.empty:
         cluster_id = int(state_cluster_row["GMM_Cluster"].iloc[0])
-        mahal = float(state_cluster_row["Mahalanobis_Distance"].iloc[0]) if "Mahalanobis_Distance" in state_cluster_row.columns else 0.0
-        profile = CLUSTER_PROFILES.get(cluster_id, {
-            "name": f"Cluster {cluster_id}",
-            "color": "#475569",
-            "interpreter": "No description available.",
-        })
+        mahal = (
+            float(state_cluster_row["Mahalanobis_Distance"].iloc[0])
+            if "Mahalanobis_Distance" in state_cluster_row.columns
+            else 0.0
+        )
+        profile = CLUSTER_PROFILES.get(
+            cluster_id,
+            {
+                "name": f"Cluster {cluster_id}",
+                "color": "#475569",
+                "interpreter": "No description available.",
+            },
+        )
 
         # Substitute mahalanobis distance into Cluster 1 interpreter dynamically
         interp_text = profile["interpreter"]
         if "Mahalanobis distance" in interp_text and cluster_id == 1:
             interp_text = interp_text.replace(
                 "Its high Mahalanobis distance",
-                f"Its Mahalanobis distance of <strong>{mahal:.2f}</strong>"
+                f"Its Mahalanobis distance of <strong>{mahal:.2f}</strong>",
             )
 
         st.markdown(
             f'<div class="interpret-box" style="border-left-color:{profile["color"]}">'
             f'<strong>{sel_state}</strong> belongs to <strong>{profile["name"]}</strong> '
-            f'(Cluster {cluster_id}) with a Mahalanobis distance of {mahal:.2f}.<br><br>'
-            f'{interp_text}'
+            f"(Cluster {cluster_id}) with a Mahalanobis distance of {mahal:.2f}.<br><br>"
+            f"{interp_text}"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -282,9 +328,15 @@ def render_cluster_panel() -> None:
         prob_cols = [c for c in clustered.columns if c.startswith("GMM_Prob_")]
         if prob_cols:
             st.markdown("**Soft Cluster Membership Probabilities**")
-            display_cols = ["state", "GMM_Governance_Label", "Mahalanobis_Distance"] + prob_cols
+            display_cols = [
+                "state",
+                "GMM_Governance_Label",
+                "Mahalanobis_Distance",
+            ] + prob_cols
             st.dataframe(
-                clustered[display_cols].sort_values("Mahalanobis_Distance", ascending=False),
+                clustered[display_cols].sort_values(
+                    "Mahalanobis_Distance", ascending=False
+                ),
                 width="stretch",
                 hide_index=True,
             )
