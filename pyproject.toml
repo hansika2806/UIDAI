@@ -12,8 +12,5 @@ ignore = ["E402", "E501", "F401", "F841", "E712", "E741"]
 "**/*drift_monitor.py" = ["F841"]
 "**/*data_validator.py" = ["F401"]
 
-[tool.black]
-line-length = 120
-target-version = ["py311"]
 
 
